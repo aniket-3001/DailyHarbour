@@ -1,0 +1,47 @@
+{% extends 'base.html' %}
+
+{% block title %}
+Homepage
+{% endblock %}
+
+{% block body %}
+<!-- using fluid, the spaces are adjusted automatically -->
+<!-- my-4 is margin on y-axis -->
+<!-- px-0 is padding on x-axis -->
+<div class="container-fluid my-4 px-0">
+    <div id="carouselExample" class="carousel slide">
+        <div class="carousel-inner">
+            <div class="carousel-item active">
+                <img src="/static/img/photo-1474533883693-59a44dbb964e.jpg" class="d-block w-100" alt="...">
+                <div class="carousel-caption d-none d-md-block">
+                    <h5>Wlcome to the best ice cream of rampur</h5>
+                    <p>I know you eat ice creams but I also know that you havent eaten my ice creams</p>
+                </div>
+            </div>
+            <div class="carousel-item">
+                <img src="/static/img/photo-1593182440754-5e47a6ea4917.jpg" class="d-block w-100" alt="...">
+                <div class="carousel-caption d-none d-md-block">
+                    <h5>Wlcome to the best ice cream of rampur</h5>
+                    <p>I know you eat ice creams but I also know that you havent eaten mine</p>
+                </div>
+            </div>
+            <div class="carousel-item">
+                <img src="/static/img/photo-1594645948603-d05d834ed69f.jpg" class="d-block w-100" alt="...">
+                <div class="carousel-caption d-none d-md-block">
+                    <h5>Wlcome to the best ice cream of rampur</h5>
+                    <p>I know you eat ice creams but I also know that you havent eaten mine</p>
+                </div>
+            </div>
+        </div>
+        <button class="carousel-control-prev" type="button" data-bs-target="#carouselExample" data-bs-slide="prev">
+            <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+            <span class="visually-hidden">Previous</span>
+        </button>
+        <button class="carousel-control-next" type="button" data-bs-target="#carouselExample" data-bs-slide="next">
+            <span class="carousel-control-next-icon" aria-hidden="true"></span>
+            <span class="visually-hidden">Next</span>
+        </button>
+    </div>
+</div>
+
+{% endblock %}
