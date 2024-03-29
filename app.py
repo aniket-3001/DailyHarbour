@@ -32,7 +32,7 @@ def login():
         if user_data:
             # Successful login, reset login attempts
             session.pop("login_attempts", None)
-            return redirect(url_for("user", usr=user_data[1]))  # Redirect to user profile
+            return redirect(url_for("homepage"))  # Redirect to user profile
         else:
             # Failed login attempt
             session["login_attempts"] += 1
@@ -44,9 +44,9 @@ def login():
     remaining_attempts = 3 - session.get("login_attempts", 0)
     return render_template("login.html",  remaining_attempts=remaining_attempts)
 
-@app.route('/user/<usr>')
-def user(usr):
-    return f"Welcome, {usr}!"
+@app.route('/homepage', methods=["POST", "GET"])
+def homepage():
+    return render_template("homepage.html")
 
 if _name_ == "_main_":
     app.run(debug=True)
