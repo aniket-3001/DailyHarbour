@@ -2,6 +2,9 @@ from flask import Flask, request, redirect, url_for, session, render_template, j
 import mysql.connector
 import logging
 
+admin_phone = '4447778888'
+admin_password = "hashedpassword5"
+
 app = Flask(__name__)
 app.secret_key = "123456"  # Set a secret key for session management
 
@@ -18,6 +21,10 @@ def get_database_connection():
 @app.route('/homepage', methods=["GET"])
 def homepage():
     return render_template("homepage.html")
+
+@app.route('/admin', methods=["GET"])
+def admin():
+    return render_template("admin.html")
 
 def get_product_id(cursor, name):
     query = "SELECT product_id FROM product WHERE product_name = %s"
@@ -41,6 +48,10 @@ def login():
     if request.method == "POST":
         phone = request.form["phone"]
         password = request.form["password"]
+
+        if phone == admin_phone and password == admin_password:
+            session["user_id"] = "admin" # take note
+            return redirect(url_for("admin"))
 
         if "login_attempts" not in session:
             session["login_attempts"] = 0
