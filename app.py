@@ -2,15 +2,15 @@ from flask import Flask, request, redirect, url_for, session, render_template
 import mysql.connector
 import time
 
-app = Flask(_name_)
+app = Flask(__name__)
 app.secret_key = "123456"  # Set a secret key for session management
 
 # MySQL database connection
 db = mysql.connector.connect(
     host="localhost",
     user="root",
-    password="angad123",
-    database="dailyharbour"
+    password="Climber@3001",
+    database="DailyHarbour"
 )
 cursor = db.cursor()
 
@@ -48,5 +48,5 @@ def login():
 def homepage():
     return render_template("homepage.html")
 
-if _name_ == "_main_":
+if __name__ == "__main__":
     app.run(debug=True)
