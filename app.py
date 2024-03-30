@@ -19,6 +19,10 @@ cursor = db.cursor()
 def homepage():
     return render_template("homepage.html")
 
+@app.route('/admin', methods=["POST", "GET"])
+def admin():
+    return render_template("admin.html")
+
 @app.route('/', methods=["POST", "GET"])
 def login():
     if request.method == "POST":
