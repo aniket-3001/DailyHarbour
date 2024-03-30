@@ -16,11 +16,9 @@ db = mysql.connector.connect (
 cursor = db.cursor()
 
 @app.route('/homepage', methods=["POST", "GET"])
-@app.route('/homepage', methods=["POST", "GET"])
 def homepage():
     return render_template("homepage.html")
 
-@app.route('/', methods=["POST", "GET"])
 @app.route('/', methods=["POST", "GET"])
 def login():
     if request.method == "POST":
