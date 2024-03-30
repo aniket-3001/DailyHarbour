@@ -60,5 +60,9 @@ def cart():
 def profile():
     return render_template("profile.html")
 
+@app.route('/orderPlaced', methods=["POST", "GET"])
+def orderPlaced():
+    return render_template("orderPlaced.html")
+
 if __name__ == "__main__":
     app.run(debug = True)
