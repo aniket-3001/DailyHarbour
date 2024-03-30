@@ -52,9 +52,9 @@ def login():
 def products():
     return render_template("products.html")
 
-@app.route('/cart', methods=["POST", "GET"])
+@app.route('/checkout', methods=["POST", "GET"])
 def cart():
-    return render_template("cart.html")
+    return render_template("checkout.html")
 
 @app.route('/profile', methods=["POST", "GET"])
 def profile():
