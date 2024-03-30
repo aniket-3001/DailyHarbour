@@ -53,7 +53,7 @@ def products():
     return render_template("products.html")
 
 @app.route('/checkout', methods=["POST", "GET"])
-def cart():
+def checkout():
     return render_template("checkout.html")
 
 @app.route('/profile', methods=["POST", "GET"])
