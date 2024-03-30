@@ -16,7 +16,10 @@ db = mysql.connector.connect (
 cursor = db.cursor()
 
 @app.route('/', methods=["POST", "GET"])
+def homepage():
+    return render_template("homepage.html")
 
+@app.route('/login', methods=["POST", "GET"])
 def login():
     if request.method == "POST":
         phone = request.form["phone"]
@@ -26,7 +29,7 @@ def login():
             session["login_attempts"] = 0
         
         # Check user credentials from the database
-        query = "SELECT * FROM user WHERE mobile_number=%s AND password_hash=%s"
+        query = "SELECT * FROM user WHERE mobile_number= %s AND password_hash= %s"
         cursor.execute(query, (phone, password))
         user_data = cursor.fetchone()
         
@@ -43,11 +46,19 @@ def login():
                 return "Too many failed attempts. Please try again later."
     
     remaining_attempts = 3 - session.get("login_attempts", 0)
-    return render_template("login.html",  remaining_attempts=remaining_attempts)
+    return render_template("login.html",  remaining_attempts = remaining_attempts)
 
-@app.route('/homepage', methods=["POST", "GET"])
-def homepage():
-    return render_template("homepage.html")
+@app.route('/products', methods=["POST", "GET"])
+def products():
+    return render_template("products.html")
+
+@app.route('/cart', methods=["POST", "GET"])
+def cart():
+    return render_template("cart.html")
+
+@app.route('/profile', methods=["POST", "GET"])
+def profile():
+    return render_template("profile.html")
 
 if __name__ == "__main__":
-    app.run(debug=True)
+    app.run(debug = True)
