@@ -6,17 +6,18 @@ app = Flask(__name__)
 app.secret_key = "123456"  # Set a secret key for session management
 
 # MySQL database connection
-db = mysql.connector.connect(
-    host="localhost",
-    user="root",
-    password="Climber@3001",
-    database="DailyHarbour"
+db = mysql.connector.connect (
+    host = "localhost",
+    user = "root",
+    password = "Climber@3001",
+    database = "DailyHarbour"
 )
+
 cursor = db.cursor()
 
 @app.route('/', methods=["POST", "GET"])
+
 def login():
-    
     if request.method == "POST":
         phone = request.form["phone"]
         password = request.form["password"]
