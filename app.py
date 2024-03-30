@@ -7,19 +7,19 @@ app.secret_key = "123456"  # Set a secret key for session management
 
 # MySQL database connection
 db = mysql.connector.connect (
-    host = "localhost",
+    host = "127.0.0.1",
     user = "root",
-    password = "Climber@3001",
+    password = "Schrodanger@754",
     database = "DailyHarbour"
 )
 
 cursor = db.cursor()
 
-@app.route('/', methods=["POST", "GET"])
+@app.route('/homepage', methods=["POST", "GET"])
 def homepage():
     return render_template("homepage.html")
 
-@app.route('/login', methods=["POST", "GET"])
+@app.route('/', methods=["POST", "GET"])
 def login():
     if request.method == "POST":
         phone = request.form["phone"]
@@ -52,13 +52,17 @@ def login():
 def products():
     return render_template("products.html")
 
-@app.route('/cart', methods=["POST", "GET"])
-def cart():
-    return render_template("cart.html")
+@app.route('/checkout', methods=["POST", "GET"])
+def checkout():
+    return render_template("checkout.html")
 
 @app.route('/profile', methods=["POST", "GET"])
 def profile():
     return render_template("profile.html")
+
+@app.route('/orderPlaced', methods=["POST", "GET"])
+def orderPlaced():
+    return render_template("orderPlaced.html")
 
 if __name__ == "__main__":
     app.run(debug = True)
