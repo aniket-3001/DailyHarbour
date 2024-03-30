@@ -7,9 +7,9 @@ app.secret_key = "123456"  # Set a secret key for session management
 
 # MySQL database connection
 db = mysql.connector.connect (
-    host = "localhost",
+    host = "127.0.0.1",
     user = "root",
-    password = "Climber@3001",
+    password = "Schrodanger@754",
     database = "DailyHarbour"
 )
 
