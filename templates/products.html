@@ -178,9 +178,17 @@ Home
     </div>
 </div>
 
+<!-- Add to Cart button -->
+<div class="text-center mt-3">
+    <a href="/checkout" id="addToCartBtn" class="btn btn-primary">Add to Cart</a>
+</div>
+
 <script>
     // Get all product elements
     const productCards = document.querySelectorAll('.card');
+
+    // Array to store cart items
+    let cartItems = [];
 
     // Loop through each product card
     productCards.forEach(card => {
@@ -212,7 +220,32 @@ Home
 
         // Initial call to update quantity display
         updateQuantity();
+
+        // Function to add product to cart
+        function addToCart() {
+            const price = parseFloat(priceElement.textContent.replace('₹', '').trim());
+
+            if (quantity > 0) {
+                cartItems.push({
+                    name: card.querySelector('.card-text').textContent,
+                    price: priceElement.textContent,
+                    quantity: quantity
+                });
+                
+                // Reset quantity after adding to cart
+                quantity = 0;
+                updateQuantity();
+            }
+        }
+
+        // Event listener for Add to Cart button
+        document.getElementById('addToCartBtn').addEventListener('click', addToCart);
     });
+
+    // Function to display cart items (for demonstration purposes)
+    // function displayCartItems() {
+    //     console.log(cartItems);
+    // }
 </script>
 
 {% endblock %}
