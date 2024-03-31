@@ -109,7 +109,7 @@ def add_to_cart():
         for product in products:
             #print(product.get('name'))
             #print(product.get('quantity'))
-            product_id = get_product_id(cursor, product.get('name'))  # Assuming you have a 'name' field in products
+            product_id = get_product_id(cursor, product.get('name'))
             # print(user_id, product_id, product.get('quantity'))
             add_to_cart_db(cursor, db, user_id, product_id, product.get('quantity'))
             # print("data added")

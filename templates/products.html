@@ -232,7 +232,6 @@
     </button>
 </div>
 
-
 <script>
     // Get all product elements
     const productCards = document.querySelectorAll(".card");
@@ -247,7 +246,7 @@
         const minusBtn = card.querySelector(".minusBtn");
         const priceElement = card.querySelector(".price");
 
-        let quantity = 0; // Initial quantit
+        let quantity = 0; // Initial quantity
 
         // Function to update quantity and display
         function updateQuantity() {
@@ -281,7 +280,7 @@
             const price = parseInt(priceElement.textContent.split(" ")[1]);
 
             if (quantity > 0) {
-                cartItems.push({ name, quantity, price });
+                cartItems.push({name, quantity, price});
             }
         });
 
@@ -298,6 +297,7 @@
                     window.location.href = "/checkout";
                     return response.json();
                 }
+
                 throw new Error("Network response was not ok.");
             })
             .then((data) => {
