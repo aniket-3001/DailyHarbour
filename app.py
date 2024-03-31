@@ -1,4 +1,4 @@
-from flask import Flask, request, redirect, url_for, session, render_template, jsonify
+from flask import Flask, request, redirect, url_for, session, render_template, jsonify, json
 import mysql.connector
 import logging
 
@@ -101,6 +101,42 @@ def timer_expired():
             return jsonify({'error': str(e)}), 500
     else:
         return jsonify({'error': 'User not authenticated'}), 401
+    
+# Function to fetch cart data from the database (private function)
+def get_cart_data(user_id):
+    try:
+        db = get_database_connection()
+        cursor = db.cursor()
+        query = "SELECT product.product_name, add_to_cart.number_of_units, product.selling_price FROM product NATURAL JOIN add_to_cart WHERE add_to_cart.user_id = %s"
+        
+        cursor.execute(query, (user_id,))
+        cart_data = cursor.fetchall()
+        cursor.close()
+        db.close()
+
+        # Convert fetched data to JSON format
+        cart_json = []
+        for item in cart_data:
+            cart_json.append({'product_name': item[0], 'quantity': item[1], 'price': item[2] * item[1]})
+        
+        print(cart_json)
+        return json.dumps(cart_json)
+    except Exception as e:
+        print("Error fetching cart data:", e)
+        return json.dumps([])
+
+# Route to render the cart page
+@app.route('/get_cart_data', methods = ['GET'])
+def cart():
+    user_id = session["user_id"]
+
+    if user_id:
+        cart_data = get_cart_data(user_id)
+        return cart_data
+    else:
+        print("Something failed")
+        return "User not authenticated"
+
 
 @app.route('/products', methods=["GET"])
 def products():

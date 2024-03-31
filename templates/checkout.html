@@ -1,12 +1,12 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="en">
 
 <head>
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>Checkout</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet"
-        integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
+        integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous" />
 
     <style>
         .container {
@@ -30,10 +30,11 @@
         .b-example-divider {
             width: 100%;
             height: 3rem;
-            background-color: rgba(0, 0, 0, .1);
-            border: solid rgba(0, 0, 0, .15);
+            background-color: rgba(0, 0, 0, 0.1);
+            border: solid rgba(0, 0, 0, 0.15);
             border-width: 1px 0;
-            box-shadow: inset 0 .5em 1.5em rgba(0, 0, 0, .1), inset 0 .125em .5em rgba(0, 0, 0, .15);
+            box-shadow: inset 0 0.5em 1.5em rgba(0, 0, 0, 0.1),
+                inset 0 0.125em 0.5em rgba(0, 0, 0, 0.15);
         }
 
         .b-example-vr {
@@ -43,7 +44,7 @@
         }
 
         .bi {
-            vertical-align: -.125em;
+            vertical-align: -0.125em;
             fill: currentColor;
         }
 
@@ -99,23 +100,27 @@
 
     <script>
         (() => {
-            'use strict'
+            "use strict";
 
             // Fetch all the forms we want to apply custom Bootstrap validation styles to
-            const forms = document.querySelectorAll('.needs-validation')
+            const forms = document.querySelectorAll(".needs-validation");
 
             // Loop over them and prevent submission
-            Array.from(forms).forEach(form => {
-                form.addEventListener('submit', event => {
-                    if (!form.checkValidity()) {
-                        event.preventDefault()
-                        event.stopPropagation()
-                    }
+            Array.from(forms).forEach((form) => {
+                form.addEventListener(
+                    "submit",
+                    (event) => {
+                        if (!form.checkValidity()) {
+                            event.preventDefault();
+                            event.stopPropagation();
+                        }
 
-                    form.classList.add('was-validated')
-                }, false)
-            })
-        })()
+                        form.classList.add("was-validated");
+                    },
+                    false
+                );
+            });
+        })();
     </script>
 
     <svg xmlns="http://www.w3.org/2000/svg" class="d-none">
@@ -186,58 +191,28 @@
         </ul>
     </div>
 
-
     <div class="container">
         <main>
             <div class="py-5 text-center">
                 <h2>Checkout form</h2>
-                <p class="lead">Kindly fill in the following details to proceed for checkout.</p>
+                <p class="lead">
+                    Kindly fill in the following details to proceed with checkout.
+                </p>
             </div>
 
             <div class="row g-5">
                 <div class="col-md-5 col-lg-4 order-md-last">
                     <h4 class="d-flex justify-content-between align-items-center mb-3">
                         <span class="text-primary">Your cart</span>
-                        <span class="badge bg-primary rounded-pill">3</span>
+                        <span class="badge bg-primary rounded-pill" id = "tot_products">0</span>
                     </h4>
-                    <ul class="list-group mb-3">
-                        <li class="list-group-item d-flex justify-content-between lh-sm">
-                            <div>
-                                <h6 class="my-0">Product name</h6>
-                                <small class="text-body-secondary">Brief description</small>
-                            </div>
-                            <span class="text-body-secondary">$12</span>
-                        </li>
-                        <li class="list-group-item d-flex justify-content-between lh-sm">
-                            <div>
-                                <h6 class="my-0">Second product</h6>
-                                <small class="text-body-secondary">Brief description</small>
-                            </div>
-                            <span class="text-body-secondary">$8</span>
-                        </li>
-                        <li class="list-group-item d-flex justify-content-between lh-sm">
-                            <div>
-                                <h6 class="my-0">Third item</h6>
-                                <small class="text-body-secondary">Brief description</small>
-                            </div>
-                            <span class="text-body-secondary">$5</span>
-                        </li>
-                        <li class="list-group-item d-flex justify-content-between bg-body-tertiary">
-                            <div class="text-success">
-                                <h6 class="my-0">Promo code</h6>
-                                <small>EXAMPLECODE</small>
-                            </div>
-                            <span class="text-success">−$5</span>
-                        </li>
-                        <li class="list-group-item d-flex justify-content-between">
-                            <span>Total (USD)</span>
-                            <strong>$20</strong>
-                        </li>
+                    <ul class="list-group mb-3" id="cartItemList">
+                        <!-- Cart items will be dynamically added here -->
                     </ul>
 
                     <form class="card p-2">
                         <div class="input-group">
-                            <input type="text" class="form-control" placeholder="Promo code">
+                            <input type="text" class="form-control" placeholder="Promo code" />
                             <button type="submit" class="btn btn-secondary">Redeem</button>
                         </div>
                     </form>
@@ -248,7 +223,8 @@
                         <div class="row g-3">
                             <div class="col-sm-6">
                                 <label for="firstName" class="form-label">First name</label>
-                                <input type="text" class="form-control" id="firstName" placeholder="" value="" required>
+                                <input type="text" class="form-control" id="firstName" placeholder="" value=""
+                                    required />
                                 <div class="invalid-feedback">
                                     Valid first name is required.
                                 </div>
@@ -256,7 +232,8 @@
 
                             <div class="col-sm-6">
                                 <label for="lastName" class="form-label">Last name</label>
-                                <input type="text" class="form-control" id="lastName" placeholder="" value="" required>
+                                <input type="text" class="form-control" id="lastName" placeholder="" value=""
+                                    required />
                                 <div class="invalid-feedback">
                                     Valid last name is required.
                                 </div>
@@ -267,7 +244,7 @@
                                 <div class="input-group has-validation">
                                     <span class="input-group-text">@</span>
                                     <input type="text" class="form-control" id="username" placeholder="Username"
-                                        required>
+                                        required />
                                     <div class="invalid-feedback">
                                         Your username is required.
                                     </div>
@@ -275,9 +252,9 @@
                             </div>
 
                             <div class="col-12">
-                                <label for="email" class="form-label">Email <span
-                                        class="text-body-secondary">(Optional)</span></label>
-                                <input type="email" class="form-control" id="email" placeholder="you@example.com">
+                                <label for="email" class="form-label">Email
+                                    <span class="text-body-secondary">(Optional)</span></label>
+                                <input type="email" class="form-control" id="email" placeholder="you@example.com" />
                                 <div class="invalid-feedback">
                                     Please enter a valid email address for shipping updates.
                                 </div>
@@ -286,16 +263,17 @@
                             <div class="col-12">
                                 <label for="address" class="form-label">Address</label>
                                 <input type="text" class="form-control" id="address" placeholder="1234 Main St"
-                                    required>
+                                    required />
                                 <div class="invalid-feedback">
                                     Please enter your shipping address.
                                 </div>
                             </div>
 
                             <div class="col-12">
-                                <label for="address2" class="form-label">Address 2 <span
-                                        class="text-body-secondary">(Optional)</span></label>
-                                <input type="text" class="form-control" id="address2" placeholder="Apartment or suite">
+                                <label for="address2" class="form-label">Address 2
+                                    <span class="text-body-secondary">(Optional)</span></label>
+                                <input type="text" class="form-control" id="address2"
+                                    placeholder="Apartment or suite" />
                             </div>
 
                             <div class="col-md-5">
@@ -322,43 +300,41 @@
 
                             <div class="col-md-3">
                                 <label for="zip" class="form-label">Zip</label>
-                                <input type="text" class="form-control" id="zip" placeholder="" required>
-                                <div class="invalid-feedback">
-                                    Zip code required.
-                                </div>
+                                <input type="text" class="form-control" id="zip" placeholder="" required />
+                                <div class="invalid-feedback">Zip code required.</div>
                             </div>
                         </div>
 
-                        <hr class="my-4">
+                        <hr class="my-4" />
 
                         <div class="form-check">
-                            <input type="checkbox" class="form-check-input" id="same-address">
+                            <input type="checkbox" class="form-check-input" id="same-address" />
                             <label class="form-check-label" for="same-address">Shipping address is the same as my
-                                billing
-                                address</label>
+                                billing address</label>
                         </div>
 
                         <div class="form-check">
-                            <input type="checkbox" class="form-check-input" id="save-info">
+                            <input type="checkbox" class="form-check-input" id="save-info" />
                             <label class="form-check-label" for="save-info">Save this information for next time</label>
                         </div>
 
-                        <hr class="my-4">
+                        <hr class="my-4" />
 
                         <h4 class="mb-3">Payment</h4>
 
                         <div class="my-3">
                             <div class="form-check">
                                 <input id="credit" name="paymentMethod" type="radio" class="form-check-input" checked
-                                    required>
+                                    required />
                                 <label class="form-check-label" for="credit">Credit card</label>
                             </div>
                             <div class="form-check">
-                                <input id="debit" name="paymentMethod" type="radio" class="form-check-input" required>
+                                <input id="debit" name="paymentMethod" type="radio" class="form-check-input" required />
                                 <label class="form-check-label" for="debit">Debit card</label>
                             </div>
                             <div class="form-check">
-                                <input id="paypal" name="paymentMethod" type="radio" class="form-check-input" required>
+                                <input id="paypal" name="paymentMethod" type="radio" class="form-check-input"
+                                    required />
                                 <label class="form-check-label" for="paypal">PayPal</label>
                             </div>
                         </div>
@@ -366,16 +342,14 @@
                         <div class="row gy-3">
                             <div class="col-md-6">
                                 <label for="cc-name" class="form-label">Name on card</label>
-                                <input type="text" class="form-control" id="cc-name" placeholder="" required>
+                                <input type="text" class="form-control" id="cc-name" placeholder="" required />
                                 <small class="text-body-secondary">Full name as displayed on card</small>
-                                <div class="invalid-feedback">
-                                    Name on card is required
-                                </div>
+                                <div class="invalid-feedback">Name on card is required</div>
                             </div>
 
                             <div class="col-md-6">
                                 <label for="cc-number" class="form-label">Credit card number</label>
-                                <input type="text" class="form-control" id="cc-number" placeholder="" required>
+                                <input type="text" class="form-control" id="cc-number" placeholder="" required />
                                 <div class="invalid-feedback">
                                     Credit card number is required
                                 </div>
@@ -383,30 +357,25 @@
 
                             <div class="col-md-3">
                                 <label for="cc-expiration" class="form-label">Expiration</label>
-                                <input type="text" class="form-control" id="cc-expiration" placeholder="" required>
-                                <div class="invalid-feedback">
-                                    Expiration date required
-                                </div>
+                                <input type="text" class="form-control" id="cc-expiration" placeholder="" required />
+                                <div class="invalid-feedback">Expiration date required</div>
                             </div>
 
                             <div class="col-md-3">
                                 <label for="cc-cvv" class="form-label">CVV</label>
-                                <input type="text" class="form-control" id="cc-cvv" placeholder="" required>
-                                <div class="invalid-feedback">
-                                    Security code required
-                                </div>
+                                <input type="text" class="form-control" id="cc-cvv" placeholder="" required />
+                                <div class="invalid-feedback">Security code required</div>
                             </div>
                         </div>
 
-                        <hr class="my-4">
+                        <hr class="my-4" />
                         <a href="/orderPlaced" class="btn btn-primary btn-lg w-100">Continue to checkout</a>
                     </form>
                 </div>
             </div>
         </main>
-
         <footer class="my-5 pt-5 text-body-secondary text-center text-small">
-            <p class="mb-1">&copy; 2017–Present Daily Harbour</p>
+            <p class="mb-1">&copy; 2024 – Present Daily Harbour</p>
             <ul class="list-inline">
                 <li class="list-inline-item"><a href="#">Privacy</a></li>
                 <li class="list-inline-item"><a href="#">Terms</a></li>
@@ -421,24 +390,26 @@
     <script>
         // Function to handle timer expiration
         function handleTimerExpiration() {
-            alert("Please complete the purchase in the given time limit! Your cart has been emptied.");
+            alert(
+                "Please complete the purchase in the given time limit! Your cart has been emptied."
+            );
             // Make an AJAX request to the backend to empty the user's cart
-            fetch('/timer_expired', {
-                method: 'POST',
+            fetch("/timer_expired", {
+                method: "POST",
                 headers: {
-                    'Content-Type': 'application/json'
-                }
+                    "Content-Type": "application/json",
+                },
             })
-                .then(response => {
+                .then((response) => {
                     if (response.ok) {
                         // Redirect the user to the homepage
                         window.location.href = "/homepage";
                     } else {
-                        throw new Error('Failed to empty user cart');
+                        throw new Error("Failed to empty user cart");
                     }
                 })
-                .catch(error => {
-                    console.error('Error:', error);
+                .catch((error) => {
+                    console.error("Error:", error);
                     // Redirect the user to the homepage even if there was an error
                     window.location.href = "/homepage";
                 });
@@ -450,6 +421,42 @@
         };
     </script>
 
+    <script>
+        // Function to fetch cart data from the backend
+        function getCartData() {
+            fetch("/get_cart_data")
+                .then((response) => response.json())
+                .then((data) => {
+                    // Dynamically add cart items to the list
+                    const cartItemList = document.getElementById("cartItemList");
+                    cartItemList.innerHTML = ""; // Clear previous items
+                    let tot_products = 0;
+                    data.forEach((item) => {
+                        const listItem = document.createElement("li");
+                        listItem.className =
+                            "list-group-item d-flex justify-content-between lh-sm";
+                        listItem.innerHTML = `
+                                <div>
+                                    <h6 class="my-0">${item.product_name}</h6>
+                                    <small class="text-body-secondary">${item.quantity} units</small>
+                                </div>
+                                <span class="text-body-secondary">$${item.price}</span>
+                            `;
+                        cartItemList.appendChild(listItem);
+                        tot_products += item.quantity;
+                    });
+                    document.getElementById("tot_products").innerText = tot_products;
+                })
+                .catch((error) => {
+                    console.error("Error fetching cart data:", error);
+                });
+        }
+
+        // Call getCartData function when the page is loaded
+        window.onload = function () {
+            getCartData();
+        };
+    </script>
 </body>
 
 </html>
