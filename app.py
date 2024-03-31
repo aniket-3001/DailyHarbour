@@ -8,7 +8,8 @@ admin_password = "hashedpassword5"
 app = Flask(__name__)
 app.secret_key = "123456"  # Set a secret key for session management
 
-logging.basicConfig(level = logging.DEBUG)  # Configure logging
+logging.basicConfig(level=logging.DEBUG)  # Configure logging
+
 
 def get_database_connection():
     return mysql.connector.connect(
@@ -18,20 +19,24 @@ def get_database_connection():
         database="DailyHarbour"
     )
 
-@app.route('/homepage', methods = ["GET"])
+
+@app.route('/homepage', methods=["GET"])
 def homepage():
     return render_template("homepage.html")
 
-@app.route('/admin', methods = ["GET"])
+
+@app.route('/admin', methods=["GET"])
 def admin():
     return render_template("admin.html")
 
+
 def get_product_id(cursor, name):
     query = "SELECT product_id FROM product WHERE product_name = %s"
-    cursor.execute(query, (name,)) # the comma is important
+    cursor.execute(query, (name,))  # the comma is important
     product_data = cursor.fetchone()
     # print(product_data)
     return product_data[0] if product_data else None
+
 
 def add_to_cart_db(cursor, db, user_id, product_id, quantity):
     try:
@@ -40,17 +45,18 @@ def add_to_cart_db(cursor, db, user_id, product_id, quantity):
         db.commit()
     except Exception as e:
         print(e)
-        # idhar error add to cart mei same entry karne pe aajayega   
-        # remember ki checkout karne pe poori cart khaali karni hogi    
+        # idhar error add to cart mei same entry karne pe aajayega
+        # remember ki checkout karne pe poori cart khaali karni hogi
 
-@app.route('/', methods = ["POST", "GET"])
+
+@app.route('/', methods=["POST", "GET"])
 def login():
     if request.method == "POST":
         phone = request.form["phone"]
         password = request.form["password"]
 
         if phone == admin_phone and password == admin_password:
-            session["user_id"] = "admin" # take note
+            session["user_id"] = "admin"  # take note
             return redirect(url_for("admin"))
 
         if "login_attempts" not in session:
@@ -79,13 +85,15 @@ def login():
                 return "Too many failed attempts. Please try again later."
 
     remaining_attempts = 3 - session.get("login_attempts", 0)
-    return render_template("login.html",  remaining_attempts = remaining_attempts)
+    return render_template("login.html",  remaining_attempts=remaining_attempts)
 
 # Define a route to handle the timer expiration
-@app.route('/timer_expired', methods = ["POST"])
+
+
+@app.route('/timer_expired', methods=["POST"])
 def timer_expired():
     user_id = session.get("user_id")
-    
+
     if user_id:
         # Implement logic to empty the user's cart in the database
         try:
@@ -101,14 +109,16 @@ def timer_expired():
             return jsonify({'error': str(e)}), 500
     else:
         return jsonify({'error': 'User not authenticated'}), 401
-    
+
 # Function to fetch cart data from the database (private function)
+
+
 def get_cart_data(user_id):
     try:
         db = get_database_connection()
         cursor = db.cursor()
         query = "SELECT product.product_name, add_to_cart.number_of_units, product.selling_price FROM product NATURAL JOIN add_to_cart WHERE add_to_cart.user_id = %s"
-        
+
         cursor.execute(query, (user_id,))
         cart_data = cursor.fetchall()
         cursor.close()
@@ -117,8 +127,9 @@ def get_cart_data(user_id):
         # Convert fetched data to JSON format
         cart_json = []
         for item in cart_data:
-            cart_json.append({'product_name': item[0], 'quantity': item[1], 'price': item[2] * item[1]})
-        
+            cart_json.append(
+                {'product_name': item[0], 'quantity': item[1], 'price': item[2] * item[1]})
+
         print(cart_json)
         return json.dumps(cart_json)
     except Exception as e:
@@ -126,7 +137,9 @@ def get_cart_data(user_id):
         return json.dumps([])
 
 # Route to render the cart page
-@app.route('/get_cart_data', methods = ['GET'])
+
+
+@app.route('/get_cart_data', methods=['GET'])
 def cart():
     user_id = session["user_id"]
 
@@ -138,19 +151,56 @@ def cart():
         return "User not authenticated"
 
 
+@app.route('/add_user', methods=["POST"])
+def add_user():
+    try:
+        data = request.get_json()
+        print(data)
+        id = data.get('user_id')  # Assuming the JSON key is 'user_id'
+        first_name = data.get('first_name')
+        last_name = data.get('last_name')
+        middle_name = data.get('middle_name')
+        gender = data.get('gender')
+        # Assuming the JSON key is 'date_of_birth'
+        dob = data.get('date_of_birth')
+        # Assuming the JSON key is 'mobile_number'
+        phone = data.get('mobile_number')
+        # Assuming the JSON key is 'password_hash'
+        password = data.get('password_hash')
+
+        db = get_database_connection()
+        cursor = db.cursor()
+        try:
+            query = "INSERT INTO user (mobile_number, first_name, middle_name, last_name, password_hash, gender, date_of_birth) VALUES (%s, %s, %s, %s, %s, %s, %s)"
+            cursor.execute(query, (phone, first_name, middle_name,
+                           last_name, password, gender, dob))
+            db.commit()
+            return jsonify({'message': 'User added successfully'}), 200
+        except Exception as e:
+            print(e)
+            return jsonify({'error': 'Database failed to add user'}), 500
+        finally:
+            cursor.close()
+            db.close()
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+
+
 @app.route('/products', methods=["GET"])
 def products():
     return render_template("products.html")
 
 # This route is used to fetch the products added by user to their cart on the frontend
+
+
 @app.route('/add_to_cart', methods=['POST'])
 def add_to_cart():
-    #print("add_to_cart")
+    # print("add_to_cart")
 
     try:
         data = request.get_json()
         products = data.get('products')
-        #print(products)
+        # print(products)
 
         if not products:
             return jsonify({'error': 'No products provided'}), 400
@@ -158,35 +208,39 @@ def add_to_cart():
         user_id = session.get("user_id")
         if user_id is None:
             return jsonify({'error': 'User not authenticated'}), 401
-        
-        #print("reach here")
+
+        # print("reach here")
         db = get_database_connection()
         cursor = db.cursor()
-        #print("reach here2")
-        
+        # print("reach here2")
+
         for product in products:
-            #print(product.get('name'))
-            #print(product.get('quantity'))
+            # print(product.get('name'))
+            # print(product.get('quantity'))
             product_id = get_product_id(cursor, product.get('name'))
             # print(user_id, product_id, product.get('quantity'))
-            add_to_cart_db(cursor, db, user_id, product_id, product.get('quantity'))
+            add_to_cart_db(cursor, db, user_id, product_id,
+                           product.get('quantity'))
             # print("data added")
         return jsonify({'message': 'Items added to cart successfully'}), 200
     except Exception as e:
         return jsonify({'error': str(e)}), 500
 
 
-@app.route('/checkout', methods = ["GET"])
+@app.route('/checkout', methods=["GET"])
 def checkout():
     return render_template("checkout.html")
 
-@app.route('/profile', methods = ["GET"])
+
+@app.route('/profile', methods=["GET"])
 def profile():
     return render_template("profile.html")
 
-@app.route('/orderPlaced', methods = ["GET"])
+
+@app.route('/orderPlaced', methods=["GET"])
 def orderPlaced():
     return render_template("orderPlaced.html")
 
+
 if __name__ == "__main__":
-    app.run(debug = True)
+    app.run(debug=True)
