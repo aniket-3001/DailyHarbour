@@ -129,6 +129,11 @@
         <!-- Hidden forms for product operations -->
         <!-- Add, update, delete product forms -->
     </div>
+    <div id="userDetails">
+        <!-- Display user details here -->
+
+    </div>
+
 
     <script>
         function openAddUserForm() {
@@ -192,6 +197,7 @@
                 });
         }
 
+
         function deleteUser() {
             var userIdToDelete = document.getElementById("userIdToDelete").value;
 
@@ -226,6 +232,41 @@
             // Implementation for displaying product details
         }
     </script>
+
+    <script>
+        function displayUserDetails() {
+            // Make AJAX request to display user details
+            fetch('/display_user', {
+                method: 'GET',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+            })
+                .then(response => {
+                    if (response.ok) {
+                        alert('User details displayed successfully');
+                        return response.json(); // Parse response JSON asynchronously
+                    } else {
+                        throw new Error('Failed to display user details');
+                    }
+                })
+                .then(data => {
+                    let userDetailsHtml = ''; // String to store user details HTML
+                    data.forEach(user => {
+                        // Construct HTML for each user and append to userDetailsHtml
+                        userDetailsHtml += `<p>${user.first_name} ${user.last_name}</p>`;
+                    });
+                    document.getElementById("userDetails").innerHTML = userDetailsHtml; // Update user details container
+    
+                    console.log('Success:', data);
+                })
+                .catch((error) => {
+                    console.error('Error:', error);
+                    alert('Failed to display user details'); // Show error message
+                });
+        }
+    </script>
+    
 </body>
 
 </html>

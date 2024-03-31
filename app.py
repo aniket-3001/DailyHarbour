@@ -8,7 +8,7 @@ admin_password = "hashedpassword5"
 app = Flask(__name__)
 app.secret_key = "123456"  # Set a secret key for session management
 
-logging.basicConfig(level = logging.DEBUG)  # Configure logging
+logging.basicConfig(level=logging.DEBUG)  # Configure logging
 
 
 def get_database_connection():
@@ -168,7 +168,7 @@ def add_user():
         try:
             query = "INSERT INTO user (mobile_number, first_name, middle_name, last_name, password_hash, gender, date_of_birth) VALUES (%s, %s, %s, %s, %s, %s, %s)"
             cursor.execute(query, (phone, first_name, middle_name,
-                        last_name, password, gender, dob))
+                                   last_name, password, gender, dob))
             db.commit()
             return jsonify({'message': 'User added successfully'}), 200
         except Exception as e:
@@ -209,7 +209,36 @@ def products():
     return render_template("products.html")
 
 
+@app.route('/display_user', methods=["GET"])
+def display_users():
+    try:
+        db = get_database_connection()
+        cursor = db.cursor()
+        query = "SELECT * FROM user"
+        cursor.execute(query)
+        users = cursor.fetchall()
+        cursor.close()
+        db.close()
+
+        # Convert the users data to a list of dictionaries for JSON serialization
+        users_list = []
+        for user in users:
+            user_dict = {
+                'id': user[0],
+                'first_name': user[1],
+                'last_name': user[2],
+                # Add other user attributes as needed
+            }
+            users_list.append(user_dict)
+
+        return jsonify(users_list)  # Return JSON response with user details
+    except Exception as e:
+        # Return error message with status code 500
+        return jsonify({'error': str(e)}), 500
+
 # This route is used to fetch the products added by user to their cart on the frontend
+
+
 @app.route('/add_to_cart', methods=['POST'])
 def add_to_cart():
     try:
@@ -235,7 +264,7 @@ def add_to_cart():
             product_id = get_product_id(cursor, product.get('name'))
             # print(user_id, product_id, product.get('quantity'))
             add_to_cart_db(cursor, db, user_id, product_id,
-                        product.get('quantity'))
+                           product.get('quantity'))
             # print("data added")
         return jsonify({'message': 'Items added to cart successfully'}), 200
     except Exception as e:
