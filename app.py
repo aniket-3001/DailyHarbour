@@ -8,7 +8,7 @@ admin_password = "hashedpassword5"
 app = Flask(__name__)
 app.secret_key = "123456"  # Set a secret key for session management
 
-logging.basicConfig(level=logging.DEBUG)  # Configure logging
+logging.basicConfig(level = logging.DEBUG)  # Configure logging
 
 
 def get_database_connection():
@@ -45,8 +45,6 @@ def add_to_cart_db(cursor, db, user_id, product_id, quantity):
         db.commit()
     except Exception as e:
         print(e)
-        # idhar error add to cart mei same entry karne pe aajayega
-        # remember ki checkout karne pe poori cart khaali karni hogi
 
 
 @app.route('/', methods=["POST", "GET"])
@@ -161,11 +159,8 @@ def add_user():
         last_name = data.get('last_name')
         middle_name = data.get('middle_name')
         gender = data.get('gender')
-        # Assuming the JSON key is 'date_of_birth'
         dob = data.get('date_of_birth')
-        # Assuming the JSON key is 'mobile_number'
         phone = data.get('mobile_number')
-        # Assuming the JSON key is 'password_hash'
         password = data.get('password_hash')
 
         db = get_database_connection()
@@ -186,17 +181,37 @@ def add_user():
         return jsonify({'error': str(e)}), 500
 
 
+@app.route('/delete_user', methods=["POST"])
+def delete_user():
+    try:
+        data = request.get_json()
+        print(data)
+        id = data.get('user_id')
+        db = get_database_connection()
+        cursor = db.cursor()
+        try:
+            query = "DELETE FROM user WHERE user_id = %s"
+            cursor.execute(query, (id,))
+            db.commit()
+            return jsonify({'message': 'User deleted successfully'}), 200
+        except Exception as e:
+            print(e)
+            return jsonify({'error': 'Database failed to delete user'}), 500
+        finally:
+            cursor.close()
+            db.close()
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+
+
 @app.route('/products', methods=["GET"])
 def products():
     return render_template("products.html")
 
+
 # This route is used to fetch the products added by user to their cart on the frontend
-
-
 @app.route('/add_to_cart', methods=['POST'])
 def add_to_cart():
-    # print("add_to_cart")
-
     try:
         data = request.get_json()
         products = data.get('products')
@@ -220,7 +235,7 @@ def add_to_cart():
             product_id = get_product_id(cursor, product.get('name'))
             # print(user_id, product_id, product.get('quantity'))
             add_to_cart_db(cursor, db, user_id, product_id,
-                           product.get('quantity'))
+                        product.get('quantity'))
             # print("data added")
         return jsonify({'message': 'Items added to cart successfully'}), 200
     except Exception as e:

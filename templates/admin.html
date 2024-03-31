@@ -7,81 +7,73 @@
     <title>Admin Page</title>
     <style>
         body {
-            background-color: #b2babb;
-            text-align: center;
-            /* Align text center */
-            margin-top: 170px;
-            /* Add margin to the top */
+            text-align: center; /* Align text center */
+            margin-top: 170px; /* Add margin to the top */
         }
 
         .admin-box {
-            background-color: #ffc0cb;
-            /* Pink background color */
-            padding: 20px;
-            /* Add padding */
-            border-radius: 10px;
-            /* Add border radius */
-            box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
-            /* Add box shadow */
-            display: inline-block;
-            /* Display as inline-block to fit content */
+            background-color: gray; /* Pink background color */
+            padding: 20px; /* Add padding */
+            border-radius: 10px; /* Add border radius */
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.2); /* Add box shadow */
+            display: inline-block; /* Display as inline-block to fit content */
+            margin-right: 20px;
+        }
+
+        .admin-details {
+            display: inline-block; /* Display as inline-block */
+            vertical-align: top; /* Align to the top */
+            width: calc(50% - 200px); /* Set width */
+            margin-right: 10px; /* Reduce margin to the right */
+            margin-bottom: 20px; /* Add margin to the bottom */
         }
 
         h1 {
-            font-weight: bold;
-            /* Make heading bold */
+            font-weight: bold; /* Make heading bold */
         }
 
         .button-container {
             display: flex;
-            flex-direction: column;
-            /* Display buttons vertically */
-            align-items: center;
-            /* Align buttons in the center horizontally */
-            margin-top: 30px;
-            /* Add margin to the top of the button container */
+            flex-direction: column; /* Display buttons vertically */
+            align-items: center; /* Align buttons in the center horizontally */
+            margin-top: 30px; /* Add margin to the top of the button container */
         }
 
         .button-container button {
-            margin: 10px;
-            /* Add margin around the buttons */
-            padding: 10px 20px;
-            /* Add padding to the buttons */
-            font-size: 16px;
-            /* Adjust font size */
-            border: 1px solid #555;
-            /* Add border */
-            border-radius: 5px;
-            /* Add border radius */
-            background-color: #f5f5f5;
-            /* Add background color */
-            box-shadow: 2px 2px 5px rgba(0, 0, 0, 0.3);
-            /* Add box shadow for 3D effect */
-            transition: box-shadow 0.3s ease;
-            /* Add transition for smooth effect */
+            margin: 10px; /* Add margin around the buttons */
+            padding: 10px 20px; /* Add padding to the buttons */
+            width: 250px; /* Set fixed width */
+            height: 40px;
+            font-size: 16px; /* Adjust font size */
+            border: 1px solid #555; /* Add border */
+            border-radius: 5px; /* Add border radius */
+            background-color: #f5f5f5; /* Add background color */
+            box-shadow: 2px 2px 5px rgba(0, 0, 0, 0.3); /* Add box shadow for 3D effect */
+            transition: box-shadow 0.3s ease; /* Add transition for smooth effect */
         }
 
         .button-container button:hover {
-            box-shadow: 4px 4px 8px rgba(0, 0, 0, 0.5);
-            /* Adjust box shadow on hover for 3D effect */
+            box-shadow: 4px 4px 8px rgba(0, 0, 0, 0.5); /* Adjust box shadow on hover for 3D effect */
         }
     </style>
 </head>
 
 <body>
-    <div class="admin-box">
-        <h1>Admin Page</h1>
-
-        <!-- Button container for Add, Update, Delete buttons -->
-        <div class="button-container">
-            <!-- Button to add a new user -->
-            <button onclick="openAddUserForm();">Add User</button>
-            <!-- Button to update an existing user -->
-            <button onclick="openUpdateUserForm();">Update User Details</button>
-            <!-- Button to delete an existing user -->
-            <button onclick="openDeleteUserForm();">Delete User</button>
+    <div class="admin-details">
+        <div class="admin-box">
+            <h1>User Details</h1> 
+            <!-- Button container for Add, Update, Delete buttons -->
+            <div class="button-container">
+                <!-- Button to add a new user -->
+                <button onclick="openAddUserForm();">Add User</button>
+                <!-- Button to delete an existing user -->
+                <button onclick="openDeleteUserForm();">Delete User</button>
+                <!-- Button to display user details -->
+                <button onclick="displayUserDetails();">Display User Details</button>
+            </div>
         </div>
     </div>
+
     <!-- Hidden form for adding a new user -->
     <form id="addUserForm" style="display: none;">
         <input type="text" id="mobileNumber" placeholder="Mobile Number" required>
@@ -124,6 +116,20 @@
         <button onclick="deleteUser();">Submit</button>
     </form>
 
+    <div class="admin-details">
+        <div class="admin-box">
+            <h1>Product Details</h1>
+            <div class="button-container">
+                <button onclick="openAddProductForm();">Add Product</button>
+                <button onclick="openUpdateProductForm();">Update Product Details</button>
+                <button onclick="openDeleteProductForm();">Delete Product</button>
+                <button onclick="displayProductDetails();">Display Product Details</button>
+            </div>
+        </div>
+        <!-- Hidden forms for product operations -->
+        <!-- Add, update, delete product forms -->
+    </div>
+
     <script>
         function openAddUserForm() {
             // Hide other forms and display the Add User form
@@ -147,7 +153,6 @@
         }
 
         function addUser() {
-            // Get form data
             var mobileNumber = document.getElementById("mobileNumber").value;
             var firstName = document.getElementById("firstName").value;
             var middleName = document.getElementById("middleName").value;
@@ -155,7 +160,6 @@
             var password = document.getElementById("password").value;
             var gender = document.getElementById("gender").value;
             var dateOfBirth = document.getElementById("dateOfBirth").value;
-
 
             fetch('/add_user', {
                 method: 'POST',
@@ -188,39 +192,7 @@
                 });
         }
 
-        function updateUser() {
-            // Get form data
-            var userId = document.getElementById("userIdToUpdate").value;
-            var newFirstName = document.getElementById("newFirstName").value;
-            var newMiddleName = document.getElementById("newMiddleName").value;
-            var newLastName = document.getElementById("newLastName").value;
-            var newPassword = document.getElementById("newPassword").value;
-            var newGender = document.getElementById("newGender").value;
-            var newDateOfBirth = document.getElementById("newDateOfBirth").value;
-
-            // Make AJAX request to update user
-            var xhr = new XMLHttpRequest();
-            xhr.open("POST", "/update_user", true);
-            xhr.setRequestHeader("Content-Type", "application/json");
-            xhr.onreadystatechange = function () {
-                if (xhr.readyState === 4 && xhr.status === 200) {
-                    alert(xhr.responseText); // Show success message
-                }
-            };
-            var userData = JSON.stringify({
-                user_id: userId,
-                first_name: newFirstName,
-                middle_name: newMiddleName,
-                last_name: newLastName,
-                password_hash: newPassword,
-                gender: newGender,
-                date_of_birth: newDateOfBirth
-            });
-            xhr.send(userData);
-        }
-
         function deleteUser() {
-            // Get form data
             var userIdToDelete = document.getElementById("userIdToDelete").value;
 
             // Make AJAX request to delete user
@@ -236,6 +208,22 @@
                 user_id: userIdToDelete
             });
             xhr.send(userData);
+        }
+        // Product details functions
+        function openAddProductForm() {
+
+        }
+
+        function openUpdateProductForm() {
+            // Implementation for opening update product form
+        }
+
+        function openDeleteProductForm() {
+            // Implementation for opening delete product form
+        }
+
+        function displayProductDetails() {
+            // Implementation for displaying product details
         }
     </script>
 </body>
