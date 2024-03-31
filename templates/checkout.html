@@ -419,16 +419,37 @@
         crossorigin="anonymous"></script>
 
     <script>
-        // Function to redirect the user after 2 minutes
-        function redirectUser() {
-            alert("Please complete the purchase in the given time limit!");
-            window.location.href = "/homepage"; // Change this URL to your desired endpoint
+        // Function to handle timer expiration
+        function handleTimerExpiration() {
+            alert("Please complete the purchase in the given time limit! Your cart has been emptied.");
+            // Make an AJAX request to the backend to empty the user's cart
+            fetch('/timer_expired', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                }
+            })
+                .then(response => {
+                    if (response.ok) {
+                        // Redirect the user to the homepage
+                        window.location.href = "/homepage";
+                    } else {
+                        throw new Error('Failed to empty user cart');
+                    }
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    // Redirect the user to the homepage even if there was an error
+                    window.location.href = "/homepage";
+                });
         }
 
         // Start the timer when the document is loaded
         window.onload = function () {
-            setTimeout(redirectUser, 60 * 1000); // 1 minute in milliseconds: timeout limit
+            setTimeout(handleTimerExpiration, 60 * 1000); // 1 minute in milliseconds: timeout limit
         };
     </script>
+
 </body>
+
 </html>

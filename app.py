@@ -81,10 +81,32 @@ def login():
     remaining_attempts = 3 - session.get("login_attempts", 0)
     return render_template("login.html",  remaining_attempts = remaining_attempts)
 
+# Define a route to handle the timer expiration
+@app.route('/timer_expired', methods=["POST"])
+def timer_expired():
+    user_id = session.get("user_id")
+    
+    if user_id:
+        # Implement logic to empty the user's cart in the database
+        try:
+            db = get_database_connection()
+            cursor = db.cursor()
+            delete_query = "DELETE FROM add_to_cart WHERE user_id = %s"
+            cursor.execute(delete_query, (user_id,))
+            db.commit()
+            cursor.close()
+            db.close()
+            return jsonify({'message': 'User cart emptied successfully'}), 200
+        except Exception as e:
+            return jsonify({'error': str(e)}), 500
+    else:
+        return jsonify({'error': 'User not authenticated'}), 401
+
 @app.route('/products', methods=["GET"])
 def products():
     return render_template("products.html")
 
+# This route is used to fetch the products added by user to their cart on the frontend
 @app.route('/add_to_cart', methods=['POST'])
 def add_to_cart():
     #print("add_to_cart")
