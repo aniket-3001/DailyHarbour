@@ -8,7 +8,7 @@ admin_password = "hashedpassword5"
 app = Flask(__name__)
 app.secret_key = "123456"  # Set a secret key for session management
 
-logging.basicConfig(level=logging.DEBUG)  # Configure logging
+logging.basicConfig(level = logging.DEBUG)  # Configure logging
 
 def get_database_connection():
     return mysql.connector.connect(
@@ -18,17 +18,17 @@ def get_database_connection():
         database="DailyHarbour"
     )
 
-@app.route('/homepage', methods=["GET"])
+@app.route('/homepage', methods = ["GET"])
 def homepage():
     return render_template("homepage.html")
 
-@app.route('/admin', methods=["GET"])
+@app.route('/admin', methods = ["GET"])
 def admin():
     return render_template("admin.html")
 
 def get_product_id(cursor, name):
     query = "SELECT product_id FROM product WHERE product_name = %s"
-    cursor.execute(query, (name,))
+    cursor.execute(query, (name,)) # the comma is important
     product_data = cursor.fetchone()
     # print(product_data)
     return product_data[0] if product_data else None
@@ -43,7 +43,7 @@ def add_to_cart_db(cursor, db, user_id, product_id, quantity):
         # idhar error add to cart mei same entry karne pe aajayega   
         # remember ki checkout karne pe poori cart khaali karni hogi    
 
-@app.route('/', methods=["POST", "GET"])
+@app.route('/', methods = ["POST", "GET"])
 def login():
     if request.method == "POST":
         phone = request.form["phone"]
@@ -77,12 +77,12 @@ def login():
             if remaining_attempts <= 0:
                 session.pop("login_attempts", None)  # Reset login attempts
                 return "Too many failed attempts. Please try again later."
-    
+
     remaining_attempts = 3 - session.get("login_attempts", 0)
     return render_template("login.html",  remaining_attempts = remaining_attempts)
 
 # Define a route to handle the timer expiration
-@app.route('/timer_expired', methods=["POST"])
+@app.route('/timer_expired', methods = ["POST"])
 def timer_expired():
     user_id = session.get("user_id")
     
@@ -140,17 +140,17 @@ def add_to_cart():
         return jsonify({'error': str(e)}), 500
 
 
-@app.route('/checkout', methods=["GET"])
+@app.route('/checkout', methods = ["GET"])
 def checkout():
     return render_template("checkout.html")
 
-@app.route('/profile', methods=["GET"])
+@app.route('/profile', methods = ["GET"])
 def profile():
     return render_template("profile.html")
 
-@app.route('/orderPlaced', methods=["GET"])
+@app.route('/orderPlaced', methods = ["GET"])
 def orderPlaced():
     return render_template("orderPlaced.html")
 
 if __name__ == "__main__":
-    app.run(debug=True)
+    app.run(debug = True)
