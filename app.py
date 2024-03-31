@@ -1,3 +1,4 @@
+
 from flask import Flask, request, redirect, url_for, session, render_template, jsonify, json
 import mysql.connector
 import logging
@@ -85,9 +86,8 @@ def login():
     remaining_attempts = 3 - session.get("login_attempts", 0)
     return render_template("login.html",  remaining_attempts=remaining_attempts)
 
+
 # Define a route to handle the timer expiration
-
-
 @app.route('/timer_expired', methods=["POST"])
 def timer_expired():
     user_id = session.get("user_id")
@@ -108,9 +108,8 @@ def timer_expired():
     else:
         return jsonify({'error': 'User not authenticated'}), 401
 
+
 # Function to fetch cart data from the database (private function)
-
-
 def get_cart_data(user_id):
     try:
         db = get_database_connection()
@@ -134,9 +133,8 @@ def get_cart_data(user_id):
         print("Error fetching cart data:", e)
         return json.dumps([])
 
+
 # Route to render the cart page
-
-
 @app.route('/get_cart_data', methods=['GET'])
 def cart():
     user_id = session["user_id"]
@@ -168,7 +166,7 @@ def add_user():
         try:
             query = "INSERT INTO user (mobile_number, first_name, middle_name, last_name, password_hash, gender, date_of_birth) VALUES (%s, %s, %s, %s, %s, %s, %s)"
             cursor.execute(query, (phone, first_name, middle_name,
-                                   last_name, password, gender, dob))
+                                last_name, password, gender, dob))
             db.commit()
             return jsonify({'message': 'User added successfully'}), 200
         except Exception as e:
@@ -200,6 +198,120 @@ def delete_user():
         finally:
             cursor.close()
             db.close()
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+    
+
+def get_product_id(cursor, name):
+    query = "SELECT product_id FROM product WHERE product_name = %s"
+    cursor.execute(query, (name,))
+    product_data = cursor.fetchone()
+    # print(product_data)
+    return product_data[0] if product_data else None
+
+
+def get_num_of_units(cursor, user_id):
+    try:
+        query = '''SELECT SUM(total_units_ordered) AS total_ordered_units
+                    FROM (
+                        SELECT SUM(number_of_units) AS total_units_ordered
+                        FROM add_to_cart
+                        WHERE user_id = %s
+                        GROUP BY product_id
+                    ) AS user_orders;'''
+        cursor.execute(query, (user_id,))
+        total_ordered_units = cursor.fetchone()[0]  # Fetch the first column of the first row
+        print(total_ordered_units)
+        return total_ordered_units if total_ordered_units else None
+    except Exception as e:
+        print(e)
+        return None
+
+
+def get_order_value(cursor, user_id):
+    try:
+        query = '''SELECT SUM(p.selling_price * c.number_of_units) AS total_price
+                    FROM add_to_cart AS c
+                    JOIN product AS p ON c.product_id = p.product_id
+                    WHERE c.user_id = %s;'''
+        
+        cursor.execute(query, (user_id,))
+        value = cursor.fetchone()
+        return value[0] if value else None
+    except Exception as e:
+        print(e)
+        return None
+
+
+def get_price(cursor, product_id):
+    try:
+        query = "SELECT selling_price FROM product WHERE product_id = %s;"
+        cursor.execute(query, (product_id,))
+        price = cursor.fetchone()
+        return price[0] if price else None
+    except Exception as e:
+        print(e)
+        return None
+
+
+def order_details_db(cursor, db, user_id, coupon_code, address_name, order_date, total_number_of_items, order_value, delivery_charge):
+    try:
+        insert_query = "INSERT INTO order_details (user_id, coupon_code, address_name, order_date, total_number_of_items, order_value, delivery_charge) VALUES (%s, %s, %s, %s, %s, %s, %s)"
+        cursor.execute(insert_query, (user_id, coupon_code, address_name, order_date, total_number_of_items, order_value, delivery_charge))
+        db.commit()
+        return cursor.lastrowid
+    except Exception as e:
+        print(e)
+        return None
+
+
+def order_products_db(cursor, db, order_no, product_id, number_of_units, price_per_unit):
+    print("reached order_products_db")
+    try:
+        insert_query = "INSERT INTO order_products (order_no, product_id, number_of_units, price_per_unit) VALUES (%s, %s, %s, %s)"
+        cursor.execute(insert_query, (order_no, product_id, number_of_units, price_per_unit))
+        db.commit()
+    except Exception as e:
+        print(e)
+
+
+@app.route('/order_details', methods=['POST'])
+def order_details():
+    try:
+        data = request.get_json()
+        address = data.get("address")
+        user_id = session.get("user_id")
+
+        if user_id is None:
+            return jsonify({'error': 'User not authenticated'}), 401
+        
+        print(user_id)
+        print(address)
+        db = get_database_connection()
+        cursor = db.cursor()
+        num_of_units = get_num_of_units(cursor, user_id)
+        order_value = get_order_value(cursor, user_id)
+        order_no = order_details_db(cursor, db, user_id, None, address, '2024-03-31', num_of_units, order_value, 0)
+        print("this is order number", order_no)
+        cart_query = "SELECT * FROM add_to_cart WHERE user_id = %s"
+        cursor.execute(cart_query, (user_id,))
+        result = cursor.fetchall()
+        cart_items = []
+        
+        for row in result:
+            print("new")
+            cart_item = {}
+            for i, column in enumerate(cursor.description):
+                cart_item[column[0]] = row[i]
+            cart_items.append(cart_item)
+
+        for item in cart_items:
+            price = get_price(cursor, item["product_id"])
+            print(item["product_id"])
+            print(item["number_of_units"])
+            print(price)
+            order_products_db(cursor, db, order_no, item["product_id"], item["number_of_units"], price)
+        return jsonify({'message': 'Bill Paid'}), 200
     except Exception as e:
         return jsonify({'error': str(e)}), 500
 
@@ -264,7 +376,7 @@ def add_to_cart():
             product_id = get_product_id(cursor, product.get('name'))
             # print(user_id, product_id, product.get('quantity'))
             add_to_cart_db(cursor, db, user_id, product_id,
-                           product.get('quantity'))
+                        product.get('quantity'))
             # print("data added")
         return jsonify({'message': 'Items added to cart successfully'}), 200
     except Exception as e:

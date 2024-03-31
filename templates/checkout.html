@@ -204,7 +204,7 @@
                 <div class="col-md-5 col-lg-4 order-md-last">
                     <h4 class="d-flex justify-content-between align-items-center mb-3">
                         <span class="text-primary">Your cart</span>
-                        <span class="badge bg-primary rounded-pill" id = "tot_products">0</span>
+                        <span class="badge bg-primary rounded-pill" id="tot_products">0</span>
                     </h4>
                     <ul class="list-group mb-3" id="cartItemList">
                         <!-- Cart items will be dynamically added here -->
@@ -221,7 +221,7 @@
                     <h4 class="mb-3">Billing address</h4>
                     <form class="needs-validation" novalidate>
                         <div class="row g-3">
-                            <div class="col-sm-6">
+                            <!-- <div class="col-sm-6">
                                 <label for="firstName" class="form-label">First name</label>
                                 <input type="text" class="form-control" id="firstName" placeholder="" value=""
                                     required />
@@ -258,18 +258,18 @@
                                 <div class="invalid-feedback">
                                     Please enter a valid email address for shipping updates.
                                 </div>
-                            </div>
+                            </div> -->
 
                             <div class="col-12">
                                 <label for="address" class="form-label">Address</label>
                                 <input type="text" class="form-control" id="address" placeholder="1234 Main St"
-                                    required />
+                                    required>
                                 <div class="invalid-feedback">
                                     Please enter your shipping address.
                                 </div>
                             </div>
 
-                            <div class="col-12">
+                            <!-- <div class="col-12">
                                 <label for="address2" class="form-label">Address 2
                                     <span class="text-body-secondary">(Optional)</span></label>
                                 <input type="text" class="form-control" id="address2"
@@ -365,11 +365,13 @@
                                 <label for="cc-cvv" class="form-label">CVV</label>
                                 <input type="text" class="form-control" id="cc-cvv" placeholder="" required />
                                 <div class="invalid-feedback">Security code required</div>
-                            </div>
+                            </div> -->
                         </div>
 
                         <hr class="my-4" />
-                        <a href="/orderPlaced" class="btn btn-primary btn-lg w-100">Continue to checkout</a>
+                        <button id="proceedtocheckoutbtn" class="btn btn-primary btn-lg w-100" onClick="checkout()">
+                            Continue to checkout
+                        </button>
                     </form>
                 </div>
             </div>
@@ -456,6 +458,39 @@
         window.onload = function () {
             getCartData();
         };
+    </script>
+
+    <script>
+        function checkout() {
+            var address = document.getElementById('address').value;
+
+            fetch("/order_details", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                },
+                body: JSON.stringify({ address: address }), // Corrected the body object
+            })
+
+                .then((response) => {
+                    if (response.ok) {
+                        alert("Bill Paid!");
+                        window.location.href = "/orderPlaced";
+                        return response.json();
+                    }
+
+                    throw new Error("Network response was not ok.");
+                })
+                .then((data) => {
+                    console.log("Response from server:", data);
+                })
+                .catch((error) => {
+                    console.error("Error checking out:", error);
+                    alert("Error checking out. Please enter products again.");
+                });
+
+            window.location.href = "/orderPlaced";
+        }
     </script>
 </body>
 
