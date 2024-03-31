@@ -173,7 +173,7 @@ def add_user():
         try:
             query = "INSERT INTO user (mobile_number, first_name, middle_name, last_name, password_hash, gender, date_of_birth) VALUES (%s, %s, %s, %s, %s, %s, %s)"
             cursor.execute(query, (phone, first_name, middle_name,
-                           last_name, password, gender, dob))
+                        last_name, password, gender, dob))
             db.commit()
             return jsonify({'message': 'User added successfully'}), 200
         except Exception as e:
