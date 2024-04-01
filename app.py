@@ -166,7 +166,7 @@ def add_user():
         try:
             query = "INSERT INTO user (mobile_number, first_name, middle_name, last_name, password_hash, gender, date_of_birth) VALUES (%s, %s, %s, %s, %s, %s, %s)"
             cursor.execute(query, (phone, first_name, middle_name,
-                                   last_name, password, gender, dob))
+                                last_name, password, gender, dob))
             db.commit()
             return jsonify({'message': 'User added successfully'}), 200
         except Exception as e:
@@ -272,7 +272,7 @@ def order_products_db(cursor, db, order_no, product_id, number_of_units, price_p
     try:
         insert_query = "INSERT INTO order_products (order_no, product_id, number_of_units, price_per_unit) VALUES (%s, %s, %s, %s)"
         cursor.execute(insert_query, (order_no, product_id,
-                       number_of_units, price_per_unit))
+                    number_of_units, price_per_unit))
         db.commit()
     except Exception as e:
         print(e)
@@ -315,7 +315,7 @@ def order_details():
             print(item["number_of_units"])
             print(price)
             order_products_db(cursor, db, order_no,
-                              item["product_id"], item["number_of_units"], price)
+                            item["product_id"], item["number_of_units"], price)
         return jsonify({'message': 'Bill Paid'}), 200
     except Exception as e:
         return jsonify({'error': str(e)}), 500
@@ -381,7 +381,7 @@ def add_to_cart():
             product_id = get_product_id(cursor, product.get('name'))
             # print(user_id, product_id, product.get('quantity'))
             add_to_cart_db(cursor, db, user_id, product_id,
-                           product.get('quantity'))
+                        product.get('quantity'))
             # print("data added")
         return jsonify({'message': 'Items added to cart successfully'}), 200
     except Exception as e:
@@ -421,7 +421,7 @@ def add_product():
         product_description = data.get('product_description')
         category_id = data.get('category_id')
         print(product_name, unit_of_measure, quantity_per_unit, available_units,
-              mrp, selling_price, manufacturer_name, product_description, category_id)
+            mrp, selling_price, manufacturer_name, product_description, category_id)
         if not (product_name and quantity_per_unit and available_units and mrp and selling_price and category_id):
             return jsonify({'error': 'Missing required fields'}), 400
 
@@ -430,7 +430,7 @@ def add_product():
         try:
             query = "INSERT INTO product (product_name, unit_of_measure, quantity_per_unit, available_units, mrp, selling_price, manufacturer_name, product_description, category_id) VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s)"
             cursor.execute(query, (product_name, unit_of_measure, quantity_per_unit, available_units,
-                           mrp, selling_price, manufacturer_name, product_description, category_id))
+                        mrp, selling_price, manufacturer_name, product_description, category_id))
             db.commit()
             return jsonify({'message': 'Product added successfully'}), 200
         except Exception as e:
