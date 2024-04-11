@@ -88,6 +88,11 @@ CREATE TABLE IF NOT EXISTS shipping_address (
 );
 
 
+INSERT INTO shipping_address (user_id, address_name, address_line_1, city, state, pincode)
+VALUES
+(1, "Home", "x", 'New York', 'New York', '100001');
+
+
 CREATE TABLE IF NOT EXISTS coupon (
     coupon_code VARCHAR(10) NOT NULL,
     coupon_description VARCHAR(200),
