@@ -316,6 +316,33 @@
             setTimeout(handleTimerExpiration, 60 * 1000); // 1 minute in milliseconds: timeout limit
         };
     </script>
+
+    <script>
+        // function to send address from frontend to backend
+        function sendAddress() {
+            const address = document.getElementById("address").value;
+            fetch("/send_address", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                },
+                body: JSON.stringify({ address }),
+            })
+                .then((response) => {
+                    if (response.ok) {
+                        alert("Moye Moye! Your order has been placed successfully");
+
+                        // Redirect the user to the order placed page
+                        window.location.href = "/orderPlaced";
+                    } else {
+                        throw new Error("Failed to send address");
+                    }
+                })
+                .catch((error) => {
+                    console.error("Error:", error);
+                });
+        }
+    </script>
 </body>
 
 </html>
