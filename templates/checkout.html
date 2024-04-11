@@ -222,17 +222,14 @@
                         <div class="row g-3">
                             <div class="col-12">
                                 <label for="address" class="form-label">Address Name</label>
-                                <input type="text" class="form-control" id="address" placeholder="1234 Main St"
-                                    required />
+                                <input type="text" class="form-control" id="address" placeholder="1234 Main St" required />
                                 <div class="invalid-feedback">
                                     Please enter your shipping address.
                                 </div>
                             </div>
                         </div>
-
-                        <hr class="my-4" />
-
-                        <a href="/orderPlaced" class="btn btn-primary btn-lg w-100">Continue to checkout</a>
+                        <hr class="my-4" />         
+                        <button class="w-100 btn btn-primary btn-lg" type="submit" onClick = "sendAddress()">Continue to checkout</button>
                     </form>
                 </div>
             </div>
@@ -309,7 +306,6 @@
                     console.error("Error fetching cart data:", error);
                 });
         }
-
         // Call getCartData function when the page is loaded
         window.onload = function () {
             getCartData();
@@ -321,6 +317,7 @@
         // function to send address from frontend to backend
         function sendAddress() {
             const address = document.getElementById("address").value;
+            console.log(address);
             fetch("/send_address", {
                 method: "POST",
                 headers: {
@@ -331,7 +328,7 @@
                 .then((response) => {
                     if (response.ok) {
                         alert("Moye Moye! Your order has been placed successfully");
-
+                        
                         // Redirect the user to the order placed page
                         window.location.href = "/orderPlaced";
                     } else {
