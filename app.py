@@ -284,14 +284,14 @@ def orderPlaced():
 
 @app.route('/send_address', methods = ["POST"])
 def get_address():
-    print("sabki mammy randy")
     try:
         data = request.get_json()
         address = data.get('address')
         print(address)
+        return jsonify({'message': 'Fetched address successfully'})
     except:
         return jsonify({'error': 'Address not provided'}), 400
 
 
 if __name__ == "__main__":
-    app.run(debug=True)
+    app.run(debug = True)
