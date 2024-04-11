@@ -7,9 +7,9 @@ admin_phone = '4447778888'
 admin_password = "hashedpassword5"
 
 app = Flask(__name__)
-app.secret_key = "123456"
+app.secret_key = "123456"  # Set a secret key for session management
 
-logging.basicConfig(level=logging.DEBUG)
+logging.basicConfig(level=logging.DEBUG)  # Configure logging
 
 
 def get_database_connection():
@@ -200,7 +200,7 @@ def delete_user():
             db.close()
     except Exception as e:
         return jsonify({'error': str(e)}), 500
-
+    
 
 def get_product_id(cursor, name):
     query = "SELECT product_id FROM product WHERE product_name = %s"
@@ -220,8 +220,7 @@ def get_num_of_units(cursor, user_id):
                         GROUP BY product_id
                     ) AS user_orders;'''
         cursor.execute(query, (user_id,))
-        # Fetch the first column of the first row
-        total_ordered_units = cursor.fetchone()[0]
+        total_ordered_units = cursor.fetchone()[0]  # Fetch the first column of the first row
         print(total_ordered_units)
         return total_ordered_units if total_ordered_units else None
     except Exception as e:
@@ -235,7 +234,7 @@ def get_order_value(cursor, user_id):
                     FROM add_to_cart AS c
                     JOIN product AS p ON c.product_id = p.product_id
                     WHERE c.user_id = %s;'''
-
+        
         cursor.execute(query, (user_id,))
         value = cursor.fetchone()
         return value[0] if value else None
@@ -258,8 +257,7 @@ def get_price(cursor, product_id):
 def order_details_db(cursor, db, user_id, coupon_code, address_name, order_date, total_number_of_items, order_value, delivery_charge):
     try:
         insert_query = "INSERT INTO order_details (user_id, coupon_code, address_name, order_date, total_number_of_items, order_value, delivery_charge) VALUES (%s, %s, %s, %s, %s, %s, %s)"
-        cursor.execute(insert_query, (user_id, coupon_code, address_name,
-                    order_date, total_number_of_items, order_value, delivery_charge))
+        cursor.execute(insert_query, (user_id, coupon_code, address_name, order_date, total_number_of_items, order_value, delivery_charge))
         db.commit()
         return cursor.lastrowid
     except Exception as e:
@@ -271,8 +269,7 @@ def order_products_db(cursor, db, order_no, product_id, number_of_units, price_p
     print("reached order_products_db")
     try:
         insert_query = "INSERT INTO order_products (order_no, product_id, number_of_units, price_per_unit) VALUES (%s, %s, %s, %s)"
-        cursor.execute(insert_query, (order_no, product_id,
-                    number_of_units, price_per_unit))
+        cursor.execute(insert_query, (order_no, product_id, number_of_units, price_per_unit))
         db.commit()
     except Exception as e:
         print(e)
@@ -287,21 +284,20 @@ def order_details():
 
         if user_id is None:
             return jsonify({'error': 'User not authenticated'}), 401
-
+        
         print(user_id)
         print(address)
         db = get_database_connection()
         cursor = db.cursor()
         num_of_units = get_num_of_units(cursor, user_id)
         order_value = get_order_value(cursor, user_id)
-        order_no = order_details_db(
-            cursor, db, user_id, None, address, '2024-03-31', num_of_units, order_value, 0)
+        order_no = order_details_db(cursor, db, user_id, None, address, '2024-03-31', num_of_units, order_value, 0)
         print("this is order number", order_no)
         cart_query = "SELECT * FROM add_to_cart WHERE user_id = %s"
         cursor.execute(cart_query, (user_id,))
         result = cursor.fetchall()
         cart_items = []
-
+        
         for row in result:
             print("new")
             cart_item = {}
@@ -314,8 +310,7 @@ def order_details():
             print(item["product_id"])
             print(item["number_of_units"])
             print(price)
-            order_products_db(cursor, db, order_no,
-                            item["product_id"], item["number_of_units"], price)
+            order_products_db(cursor, db, order_no, item["product_id"], item["number_of_units"], price)
         return jsonify({'message': 'Bill Paid'}), 200
     except Exception as e:
         return jsonify({'error': str(e)}), 500
@@ -401,99 +396,6 @@ def profile():
 @app.route('/orderPlaced', methods=["GET"])
 def orderPlaced():
     return render_template("orderPlaced.html")
-
-
-@app.route('/add_product', methods=["POST"])
-def add_product():
-    print("Reached here")
-    try:
-        data = request.get_json()
-        if not data:
-            return jsonify({'error': 'No data provided in the request'}), 400
-
-        product_name = data.get('product_name')
-        unit_of_measure = data.get('unit_of_measure')
-        quantity_per_unit = data.get('quantity_per_unit')
-        available_units = data.get('available_units')
-        mrp = data.get('mrp')
-        selling_price = data.get('selling_price')
-        manufacturer_name = data.get('manufacturer_name')
-        product_description = data.get('product_description')
-        category_id = data.get('category_id')
-        print(product_name, unit_of_measure, quantity_per_unit, available_units,
-            mrp, selling_price, manufacturer_name, product_description, category_id)
-        if not (product_name and quantity_per_unit and available_units and mrp and selling_price and category_id):
-            return jsonify({'error': 'Missing required fields'}), 400
-
-        db = get_database_connection()
-        cursor = db.cursor()
-        try:
-            query = "INSERT INTO product (product_name, unit_of_measure, quantity_per_unit, available_units, mrp, selling_price, manufacturer_name, product_description, category_id) VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s)"
-            cursor.execute(query, (product_name, unit_of_measure, quantity_per_unit, available_units,
-                        mrp, selling_price, manufacturer_name, product_description, category_id))
-            db.commit()
-            return jsonify({'message': 'Product added successfully'}), 200
-        except Exception as e:
-            print(e)
-            return jsonify({'error': 'Database failed to add product'}), 500
-        finally:
-            cursor.close()
-            db.close()
-    except Exception as e:
-        return jsonify({'error': str(e)}), 500
-
-
-@app.route('/display_product', methods=["GET"])
-def display_product():
-    try:
-        db = get_database_connection()
-        cursor = db.cursor()
-        query = "SELECT * FROM product"
-        cursor.execute(query)
-        users = cursor.fetchall()
-        cursor.close()
-        db.close()
-
-        # Convert the users data to a list of dictionaries for JSON serialization
-        users_list = []
-        for user in users:
-            user_dict = {
-                'product_name': user[1],
-                'selling_price': user[2],
-                # Add other user attributes as needed
-            }
-            users_list.append(user_dict)
-        print(users_list)
-        return jsonify(users_list)  # Return JSON response with user details
-    except Exception as e:
-        # Return error message with status code 500
-        return jsonify({'error': str(e)}), 500
-
-
-@app.route('/delete_product', methods=["POST"])
-def delete_product():
-    try:
-        print("Reached here delete product")
-        data = request.get_json()
-        print(data)
-        id = data.get('product_id')
-        db = get_database_connection()
-        cursor = db.cursor()
-        print(id)
-        try:
-            query = "DELETE FROM product WHERE product_id = %s"
-            cursor.execute(query, (id,))
-            db.commit()
-            print("Product deleted")
-            return jsonify({'message': 'Product deleted successfully'}), 200
-        except Exception as e:
-            print(e)
-            return jsonify({'error': 'Database failed to delete product'}), 500
-        finally:
-            cursor.close()
-            db.close()
-    except Exception as e:
-        return jsonify({'error': str(e)}), 500
 
 
 if __name__ == "__main__":
