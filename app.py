@@ -128,7 +128,7 @@ def get_cart_data(user_id):
             cart_json.append(
                 {'product_name': item[0], 'quantity': item[1], 'price': item[2] * item[1]})
 
-        print(cart_json)
+        # print(cart_json)
         return json.dumps(cart_json)
     except Exception as e:
         print("Error fetching cart data:", e)
@@ -145,7 +145,6 @@ def cart():
         cart_data = get_cart_data(user_id)
         return cart_data
     else:
-        print("Something failed")
         return "User not authenticated"
 
 
@@ -153,7 +152,7 @@ def cart():
 def add_user():
     try:
         data = request.get_json()
-        print(data)
+        # print(data)
         id = data.get('user_id')  # Assuming the JSON key is 'user_id'
         first_name = data.get('first_name')
         last_name = data.get('last_name')
@@ -185,7 +184,6 @@ def add_user():
 def delete_user():
     try:
         data = request.get_json()
-        print(data)
         id = data.get('user_id')
         db = get_database_connection()
         cursor = db.cursor()
@@ -253,10 +251,8 @@ def add_to_cart():
         if user_id is None:
             return jsonify({'error': 'User not authenticated'}), 401
 
-        # print("reach here")
         db = get_database_connection()
         cursor = db.cursor()
-        # print("reach here2")
 
         for product in products:
             # print(product.get('name'))
@@ -284,6 +280,17 @@ def profile():
 @app.route('/orderPlaced', methods=["GET"])
 def orderPlaced():
     return render_template("orderPlaced.html")
+
+
+@app.route('/send_address', methods = ["POST"])
+def get_address():
+    print("sabki mammy randy")
+    try:
+        data = request.get_json()
+        address = data.get('address')
+        print(address)
+    except:
+        return jsonify({'error': 'Address not provided'}), 400
 
 
 if __name__ == "__main__":
