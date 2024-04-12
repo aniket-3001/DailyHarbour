@@ -134,7 +134,7 @@ def get_cart_data(user_id):
 def get_cart_data2(user_id):
     db = get_database_connection()
     cursor = db.cursor()
-    query = "SELECT product.product_id, add_to_cart.number_of_units FROM product NATURAL JOIN add_to_cart WHERE add_to_cart.user_id = %s"
+    query = "SELECT product.product_id, add_to_cart.number_of_units, product.selling_price FROM product NATURAL JOIN add_to_cart WHERE add_to_cart.user_id = %s"
 
     cursor.execute(query, (user_id,))
     cart_data = cursor.fetchall()
@@ -144,8 +144,14 @@ def get_cart_data2(user_id):
     # convert fetched data to python dictionary
     cart_dict = {}
     for item in cart_data:
-        cart_dict[item[0]] = item[1]
-    
+        product_id = item[0]
+        number_of_units = item[1]
+        selling_price = item[2]
+        cart_dict[product_id] = {
+            'number_of_units': number_of_units,
+            'selling_price': selling_price
+        }
+
     return cart_dict
 
 
@@ -246,7 +252,6 @@ def display_users():
         return jsonify({'error': str(e)}), 500
 
 
-
 # This route is used to fetch the products added by user to their cart on the frontend
 @app.route('/add_to_cart', methods=['POST'])
 def add_to_cart():
@@ -340,19 +345,19 @@ def orderDetails(address):
         return order_no[0] if order_no else None
 
 
-# def orderProducts(order_no):
-#     user_id = session.get("user_id")
+def orderProducts(order_no):
+    user_id = session.get("user_id")
 
-#     if user_id:
-#         # first get the products in the cart
-#         cart_data = get_cart_data2(user_id)
-#         db = get_database_connection()
-#         cursor = db.cursor()
+    if user_id:
+        # first get the products in the cart
+        cart_data = get_cart_data2(user_id)
+        db = get_database_connection()
+        cursor = db.cursor()
 
-#         for product_id, quantity in cart_data.items():
-#             query = '''INSERT INTO order_products (order_no, product_id, number_of_units) VALUES (%s, %s, %s);'''
-#             cursor.execute(query, (order_no, product_id, quantity))
-#             db.commit()
+        for product_id in cart_data:
+            query = '''INSERT INTO order_products (order_no, product_id, number_of_units, price_per_unit) VALUES (%s, %s, %s, %s);'''
+            cursor.execute(query, (order_no, product_id, cart_data[product_id]['number_of_units'], cart_data[product_id]['selling_price']))
+            db.commit()
 
 @app.route('/send_address', methods = ["POST"])
 def get_address():
@@ -362,7 +367,7 @@ def get_address():
         data = request.get_json()
         address = data.get('address')
         order_no = orderDetails(address)
-        # orderProducts(order_no)
+        orderProducts(order_no)
         
         # empty the cart for the user once the order has been created
         db = get_database_connection()
