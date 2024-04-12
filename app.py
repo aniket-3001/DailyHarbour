@@ -360,7 +360,7 @@ def orderProducts(order_no):
             db.commit()
 
 @app.route('/send_address', methods = ["POST"])
-def get_address():
+def place_order():
     user_id = session.get("user_id")
 
     try:
