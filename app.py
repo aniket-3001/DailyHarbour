@@ -376,7 +376,7 @@ def place_order():
         cursor.execute(query, (user_id,))
         db.commit()
 
-        return jsonify({'message': 'Fetched address successfully'})
+        return jsonify({'message': 'Fetched address successfully'}), 200
     except:
         return jsonify({'error': 'Address not provided'}), 400
 
