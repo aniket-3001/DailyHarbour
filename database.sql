@@ -115,9 +115,9 @@ VALUES
 
 CREATE TABLE IF NOT EXISTS order_details (
     order_no INT AUTO_INCREMENT,
-    user_id INT,
+    user_id INT NOT NULL,
     coupon_code VARCHAR(10),
-    address_name VARCHAR(20),
+    address_name VARCHAR(20) NOT NULL,
     order_date DATE NOT NULL,
     total_number_of_items INT NOT NULL CHECK(total_number_of_items > 0),
     order_value FLOAT NOT NULL CHECK(order_value > 0),

@@ -34,7 +34,6 @@ def get_product_id(cursor, name):
     query = "SELECT product_id FROM product WHERE product_name = %s"
     cursor.execute(query, (name,))  # the comma is important
     product_data = cursor.fetchone()
-    # print(product_data)
     return product_data[0] if product_data else None
 
 
@@ -128,7 +127,6 @@ def get_cart_data(user_id):
             cart_json.append(
                 {'product_name': item[0], 'quantity': item[1], 'price': item[2] * item[1]})
 
-        # print(cart_json)
         return json.dumps(cart_json)
     except Exception as e:
         print("Error fetching cart data:", e)
@@ -152,7 +150,6 @@ def cart():
 def add_user():
     try:
         data = request.get_json()
-        # print(data)
         id = data.get('user_id')  # Assuming the JSON key is 'user_id'
         first_name = data.get('first_name')
         last_name = data.get('last_name')
@@ -242,7 +239,6 @@ def add_to_cart():
     try:
         data = request.get_json()
         products = data.get('products')
-        # print(products)
 
         if not products:
             return jsonify({'error': 'No products provided'}), 400
@@ -255,13 +251,9 @@ def add_to_cart():
         cursor = db.cursor()
 
         for product in products:
-            # print(product.get('name'))
-            # print(product.get('quantity'))
             product_id = get_product_id(cursor, product.get('name'))
-            # print(user_id, product_id, product.get('quantity'))
             add_to_cart_db(cursor, db, user_id, product_id,
-                           product.get('quantity'))
-            # print("data added")
+                    product.get('quantity'))
         return jsonify({'message': 'Items added to cart successfully'}), 200
     except Exception as e:
         return jsonify({'error': str(e)}), 500
@@ -281,6 +273,31 @@ def profile():
 def orderPlaced():
     return render_template("orderPlaced.html")
 
+def get_order_value(cursor, user_id):
+    try:
+        query = '''SELECT SUM(p.selling_price * c.number_of_units) AS total_price
+                    FROM add_to_cart AS c
+                    JOIN product AS p ON c.product_id = p.product_id
+                    WHERE c.user_id = %s;'''
+
+        cursor.execute(query, (user_id,))
+        value = cursor.fetchone()
+        return value[0] if value else None
+    except Exception as e:
+        print(e)
+        return None
+    
+def get_number_of_products(cursor, user_id):
+    try:
+        query = '''SELECT sum(number_of_units) AS total_products from add_to_cart where user_id = %s;'''
+
+        cursor.execute(query, (user_id,))
+        value = cursor.fetchone()
+        return value[0] if value else None
+    except Exception as e:
+        print(e)
+        return None
+
 # returns the order number
 def orderDetails(address):
     user_id = session.get("user_id")
@@ -289,15 +306,22 @@ def orderDetails(address):
         db = get_database_connection()
         cursor = db.cursor()
 
-        # find total number of products
-        cursor.execute()
-        cart_items = cursor.fetchall()
+        order_value = get_order_value(cursor, user_id)
+        number_of_products = get_number_of_products(cursor, user_id)
+        query = '''INSERT INTO order_details (user_id, address_name, order_date, total_number_of_items, order_value, delivery_charge) VALUES (%s, %s, %s, %s, %s, %s);'''
+        cursor.execute(query, (user_id, address, '2021-09-01', number_of_products, order_value, 0))
+        db.commit()
+
+        # obtain order_no of the order
+        query = '''SELECT order_no from order_details where user_id = %s and order_date = %s;'''
+        cursor.execute(query, (user_id, '2021-09-01'))
+        order_no = cursor.fetchone()
 
         cursor.close()
         db.close()
 
-        if cart_items:
-            cart_data = {product_id: number_of_units for product_id, number_of_units in cart_items}
+        return order_no[0] if order_no else None
+
 
 def orderProducts(order_no):
     pass
@@ -309,7 +333,6 @@ def get_address():
     try:
         data = request.get_json()
         address = data.get('address')
-        print(address)
         order_no = orderDetails(address)
         orderProducts(order_no)
         
@@ -318,6 +341,7 @@ def get_address():
         cursor = db.cursor()
         query = "DELETE FROM add_to_cart where user_id = %s"
         cursor.execute(query, (user_id,))
+        db.commit()
 
         return jsonify({'message': 'Fetched address successfully'})
     except:
