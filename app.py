@@ -84,9 +84,8 @@ def login():
     remaining_attempts = 3 - session.get("login_attempts", 0)
     return render_template("login.html",  remaining_attempts=remaining_attempts)
 
+
 # Define a route to handle the timer expiration
-
-
 @app.route('/timer_expired', methods=["POST"])
 def timer_expired():
     user_id = session.get("user_id")
@@ -107,9 +106,8 @@ def timer_expired():
     else:
         return jsonify({'error': 'User not authenticated'}), 401
 
+
 # Function to fetch cart data from the database (private function)
-
-
 def get_cart_data(user_id):
     try:
         db = get_database_connection()
@@ -132,7 +130,23 @@ def get_cart_data(user_id):
         print("Error fetching cart data:", e)
         return json.dumps([])
 
-# Route to render the cart page
+
+def get_cart_data2(user_id):
+    db = get_database_connection()
+    cursor = db.cursor()
+    query = "SELECT product.product_id, add_to_cart.number_of_units FROM product NATURAL JOIN add_to_cart WHERE add_to_cart.user_id = %s"
+
+    cursor.execute(query, (user_id,))
+    cart_data = cursor.fetchall()
+    cursor.close()
+    db.close()
+
+    # convert fetched data to python dictionary
+    cart_dict = {}
+    for item in cart_data:
+        cart_dict[item[0]] = item[1]
+    
+    return cart_dict
 
 
 @app.route('/get_cart_data', methods=['GET'])
@@ -164,7 +178,7 @@ def add_user():
         try:
             query = "INSERT INTO user (mobile_number, first_name, middle_name, last_name, password_hash, gender, date_of_birth) VALUES (%s, %s, %s, %s, %s, %s, %s)"
             cursor.execute(query, (phone, first_name, middle_name,
-                                   last_name, password, gender, dob))
+                                last_name, password, gender, dob))
             db.commit()
             return jsonify({'message': 'User added successfully'}), 200
         except Exception as e:
@@ -323,8 +337,19 @@ def orderDetails(address):
         return order_no[0] if order_no else None
 
 
-def orderProducts(order_no):
-    pass
+# def orderProducts(order_no):
+#     user_id = session.get("user_id")
+
+#     if user_id:
+#         # first get the products in the cart
+#         cart_data = get_cart_data2(user_id)
+#         db = get_database_connection()
+#         cursor = db.cursor()
+
+#         for product_id, quantity in cart_data.items():
+#             query = '''INSERT INTO order_products (order_no, product_id, number_of_units) VALUES (%s, %s, %s);'''
+#             cursor.execute(query, (order_no, product_id, quantity))
+#             db.commit()
 
 @app.route('/send_address', methods = ["POST"])
 def get_address():
