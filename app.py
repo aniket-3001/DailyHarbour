@@ -281,13 +281,44 @@ def profile():
 def orderPlaced():
     return render_template("orderPlaced.html")
 
+# returns the order number
+def orderDetails(address):
+    user_id = session.get("user_id")
+
+    if user_id:
+        db = get_database_connection()
+        cursor = db.cursor()
+
+        # find total number of products
+        cursor.execute()
+        cart_items = cursor.fetchall()
+
+        cursor.close()
+        db.close()
+
+        if cart_items:
+            cart_data = {product_id: number_of_units for product_id, number_of_units in cart_items}
+
+def orderProducts(order_no):
+    pass
 
 @app.route('/send_address', methods = ["POST"])
 def get_address():
+    user_id = session.get("user_id")
+
     try:
         data = request.get_json()
         address = data.get('address')
         print(address)
+        order_no = orderDetails(address)
+        orderProducts(order_no)
+        
+        # empty the cart for the user once the order has been created
+        db = get_database_connection()
+        cursor = db.cursor()
+        query = "DELETE FROM add_to_cart where user_id = %s"
+        cursor.execute(query, (user_id,))
+
         return jsonify({'message': 'Fetched address successfully'})
     except:
         return jsonify({'error': 'Address not provided'}), 400
