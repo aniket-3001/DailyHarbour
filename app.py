@@ -245,9 +245,9 @@ def display_users():
         # Return error message with status code 500
         return jsonify({'error': str(e)}), 500
 
+
+
 # This route is used to fetch the products added by user to their cart on the frontend
-
-
 @app.route('/add_to_cart', methods=['POST'])
 def add_to_cart():
     try:
@@ -287,6 +287,7 @@ def profile():
 def orderPlaced():
     return render_template("orderPlaced.html")
 
+
 def get_order_value(cursor, user_id):
     try:
         query = '''SELECT SUM(p.selling_price * c.number_of_units) AS total_price
@@ -301,6 +302,7 @@ def get_order_value(cursor, user_id):
         print(e)
         return None
     
+
 def get_number_of_products(cursor, user_id):
     try:
         query = '''SELECT sum(number_of_units) AS total_products from add_to_cart where user_id = %s;'''
@@ -311,6 +313,7 @@ def get_number_of_products(cursor, user_id):
     except Exception as e:
         print(e)
         return None
+
 
 # returns the order number
 def orderDetails(address):
