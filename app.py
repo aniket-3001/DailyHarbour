@@ -359,7 +359,7 @@ def get_address():
         data = request.get_json()
         address = data.get('address')
         order_no = orderDetails(address)
-        orderProducts(order_no)
+        # orderProducts(order_no)
         
         # empty the cart for the user once the order has been created
         db = get_database_connection()
