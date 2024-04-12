@@ -8,15 +8,15 @@ admin_password = "hashedpassword5"
 app = Flask(__name__)
 app.secret_key = "123456"  # Set a secret key for session management
 
-logging.basicConfig(level=logging.DEBUG)  # Configure logging
+logging.basicConfig(level = logging.DEBUG)  # Configure logging
 
 
 def get_database_connection():
     return mysql.connector.connect(
-        host="localhost",
-        user="root",
-        password="Climber@3001",
-        database="DailyHarbour"
+        host = "localhost",
+        user = "root",
+        password = "Climber@3001",
+        database = "DailyHarbour"
     )
 
 
