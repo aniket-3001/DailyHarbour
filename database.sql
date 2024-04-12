@@ -149,38 +149,6 @@ CREATE TABLE IF NOT EXISTS shipment (
 );
 
 
-CREATE TABLE IF NOT EXISTS payment (
-    invoice_no VARCHAR(20),
-    order_no INT,
-    payment_status BOOLEAN NOT NULL,
-    payment_date_time DATETIME NOT NULL,
-    payment_mode VARCHAR(20) NOT NULL,
-    PRIMARY KEY (invoice_no),
-    FOREIGN KEY (order_no) REFERENCES order_details(order_no)
-);
-
-
-CREATE TABLE IF NOT EXISTS review (
-    user_id INT,
-    product_id INT,
-    review_date DATE NOT NULL,
-    rating INT NOT NULL CHECK(rating BETWEEN 1 AND 5),
-    feedback VARCHAR(500), -- feedback is optional
-    PRIMARY KEY (user_id, product_id),
-    FOREIGN KEY (user_id) REFERENCES user(user_id),
-    FOREIGN KEY (product_id) REFERENCES product(product_id)
-);
-
-
-CREATE TABLE IF NOT EXISTS product_img (
-    image_id INT AUTO_INCREMENT,
-    product_id INT,
-    image_reference VARCHAR(100) NOT NULL,
-    PRIMARY KEY (image_id),
-    FOREIGN KEY (product_id) REFERENCES product(product_id)
-);
-
-
 CREATE TABLE IF NOT EXISTS add_to_cart (
     user_id INT,
     product_id INT,
