@@ -321,64 +321,70 @@ def get_number_of_products(cursor, user_id):
 
 
 # returns the order number
-def orderDetails(address):
-    user_id = session.get("user_id")
+def orderDetails(address, user_id):
+    db = get_database_connection()
+    cursor = db.cursor()
 
-    if user_id:
-        db = get_database_connection()
-        cursor = db.cursor()
+    order_value = get_order_value(cursor, user_id)
+    number_of_products = get_number_of_products(cursor, user_id)
+    query = '''INSERT INTO order_details (user_id, address_name, order_date, total_number_of_items, order_value, delivery_charge) VALUES (%s, %s, %s, %s, %s, %s);'''
+    cursor.execute(query, (user_id, address, '2021-09-01', number_of_products, order_value, 0))
+    db.commit()
 
-        order_value = get_order_value(cursor, user_id)
-        number_of_products = get_number_of_products(cursor, user_id)
-        query = '''INSERT INTO order_details (user_id, address_name, order_date, total_number_of_items, order_value, delivery_charge) VALUES (%s, %s, %s, %s, %s, %s);'''
-        cursor.execute(query, (user_id, address, '2021-09-01', number_of_products, order_value, 0))
+    # obtain order_no of the order
+    query = '''SELECT order_no from order_details where user_id = %s and order_date = %s;'''
+    cursor.execute(query, (user_id, '2021-09-01'))
+    order_no = cursor.fetchone()
+
+    cursor.close()
+    db.close()
+
+    return order_no[0] if order_no else None
+
+
+def orderProducts(order_no, user_id):
+    # first get the products in the cart
+    cart_data = get_cart_data2(user_id)
+    db = get_database_connection()
+    cursor = db.cursor()
+
+    for product_id in cart_data:
+        query = '''INSERT INTO order_products (order_no, product_id, number_of_units, price_per_unit) VALUES (%s, %s, %s, %s);'''
+        cursor.execute(query, (order_no, product_id, cart_data[product_id]['number_of_units'], cart_data[product_id]['selling_price']))
         db.commit()
 
-        # obtain order_no of the order
-        query = '''SELECT order_no from order_details where user_id = %s and order_date = %s;'''
-        cursor.execute(query, (user_id, '2021-09-01'))
-        order_no = cursor.fetchone()
-
-        cursor.close()
-        db.close()
-
-        return order_no[0] if order_no else None
-
-
-def orderProducts(order_no):
-    user_id = session.get("user_id")
-
-    if user_id:
-        # first get the products in the cart
-        cart_data = get_cart_data2(user_id)
-        db = get_database_connection()
-        cursor = db.cursor()
-
-        for product_id in cart_data:
-            query = '''INSERT INTO order_products (order_no, product_id, number_of_units, price_per_unit) VALUES (%s, %s, %s, %s);'''
-            cursor.execute(query, (order_no, product_id, cart_data[product_id]['number_of_units'], cart_data[product_id]['selling_price']))
-            db.commit()
+    cursor.close()
+    db.close()
 
 @app.route('/send_address', methods = ["POST"])
 def place_order():
     user_id = session.get("user_id")
 
-    try:
-        data = request.get_json()
-        address = data.get('address')
-        order_no = orderDetails(address)
-        orderProducts(order_no)
-        
-        # empty the cart for the user once the order has been created
-        db = get_database_connection()
-        cursor = db.cursor()
-        query = "DELETE FROM add_to_cart where user_id = %s"
-        cursor.execute(query, (user_id,))
-        db.commit()
+    if user_id:
+        try:
+            data = request.get_json()
+            address = data.get('address')
 
-        return jsonify({'message': 'Fetched address successfully'}), 200
-    except:
-        return jsonify({'error': 'Address not provided'}), 400
+            order_no = orderDetails(address, user_id)
+
+            if order_no:
+                orderProducts(order_no, user_id)
+            
+            # empty the cart for the user once the order has been created
+            db = get_database_connection()
+            cursor = db.cursor()
+            query = "DELETE FROM add_to_cart where user_id = %s"
+            cursor.execute(query, (user_id,))
+            db.commit()
+
+            cursor.close()
+            db.close()
+
+            return jsonify({'message': 'Fetched address successfully'}), 200
+        except:
+            return jsonify({'error': 'Address not provided'}), 400
+    else:
+        return jsonify({'error': 'User not authenticated'}), 401
 
 
 if __name__ == "__main__":

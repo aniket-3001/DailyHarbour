@@ -319,7 +319,6 @@
         // function to send address from frontend to backend
         function sendAddress() {
             const address = document.getElementById("address").value;
-            console.log("Sending address:", address);
             fetch("/send_address", {
                 method: "POST",
                 headers: {
@@ -328,13 +327,12 @@
                 body: JSON.stringify({ address }),
             })
                 .then((response) => {
-                    console.log("Response status:", response.status);
                     if (response.ok) {
-                        console.log("Request successful");
                         alert("Moye Moye! Your order has been placed successfully");
+                        
+                        // Redirect the user to the order placed page
                         window.location.href = "/orderPlaced";
                     } else {
-                        console.error("Request failed:", response.statusText);
                         throw new Error("Failed to send address");
                     }
                 })
@@ -342,7 +340,6 @@
                     console.error("Error:", error);
                 });
         }
-
     </script>
 </body>
 
