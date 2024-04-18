@@ -13,9 +13,9 @@ logging.basicConfig(level = logging.DEBUG)  # Configure logging
 
 def get_database_connection():
     return mysql.connector.connect(
-        host = "localhost",
+        host = "127.0.0.1",
         user = "root",
-        password = "Climber@3001",
+        password = "1234",
         database = "DailyHarbour"
     )
 
@@ -325,21 +325,30 @@ def orderDetails(address, user_id):
     db = get_database_connection()
     cursor = db.cursor()
 
-    order_value = get_order_value(cursor, user_id)
-    number_of_products = get_number_of_products(cursor, user_id)
-    query = '''INSERT INTO order_details (user_id, address_name, order_date, total_number_of_items, order_value, delivery_charge) VALUES (%s, %s, %s, %s, %s, %s);'''
-    cursor.execute(query, (user_id, address, '2021-09-01', number_of_products, order_value, 0))
-    db.commit()
+    try:
+        order_value = get_order_value(cursor, user_id)
+        number_of_products = get_number_of_products(cursor, user_id)
+        
+        # Insert order details into the database
+        query = '''INSERT INTO order_details (user_id, address_name, order_date, total_number_of_items, order_value, delivery_charge) VALUES (%s, %s, %s, %s, %s, %s);'''
+        cursor.execute(query, (user_id, address, '2021-09-01', number_of_products, order_value, 0))
+        db.commit()
 
-    # obtain order_no of the order
-    query = '''SELECT order_no from order_details where user_id = %s and order_date = %s;'''
-    cursor.execute(query, (user_id, '2021-09-01'))
-    order_no = cursor.fetchone()
+        # obtain order_no of the order
+        query = '''SELECT order_no FROM order_details WHERE user_id = %s AND order_date = %s;'''
+        cursor.execute(query, (user_id, '2021-09-01'))
+        order_no = cursor.fetchall()
 
-    cursor.close()
-    db.close()
 
-    return order_no[0] if order_no else None
+        return order_no[0] if order_no else None
+
+    except Exception as e:
+        print("Error in orderDetails:", e)
+        return None
+
+    finally:
+        cursor.close()
+        db.close()
 
 
 def orderProducts(order_no, user_id):
@@ -364,24 +373,26 @@ def place_order():
         try:
             data = request.get_json()
             address = data.get('address')
-
             order_no = orderDetails(address, user_id)
+            print(order_no)
 
-            if order_no:
-                orderProducts(order_no, user_id)
+            if order_no is not None:
+                orderProducts(order_no[0], user_id)
             
             # empty the cart for the user once the order has been created
             db = get_database_connection()
             cursor = db.cursor()
             query = "DELETE FROM add_to_cart where user_id = %s"
             cursor.execute(query, (user_id,))
+            cursor.fetchall()
             db.commit()
 
             cursor.close()
             db.close()
 
             return jsonify({'message': 'Fetched address successfully'}), 200
-        except:
+        except Exception as e:
+            print(e)
             return jsonify({'error': 'Address not provided'}), 400
     else:
         return jsonify({'error': 'User not authenticated'}), 401
