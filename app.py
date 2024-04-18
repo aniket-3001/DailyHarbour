@@ -15,7 +15,7 @@ def get_database_connection():
     return mysql.connector.connect(
         host = "127.0.0.1",
         user = "root",
-        password = "1234",
+        password = "Climber@3001",
         database = "DailyHarbour"
     )
 
@@ -374,7 +374,6 @@ def place_order():
             data = request.get_json()
             address = data.get('address')
             order_no = orderDetails(address, user_id)
-            print(order_no)
 
             if order_no is not None:
                 orderProducts(order_no[0], user_id)
