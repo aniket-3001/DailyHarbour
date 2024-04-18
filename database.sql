@@ -45,18 +45,17 @@ VALUES
 
 
 CREATE TABLE IF NOT EXISTS product (
-    product_id INT AUTO_INCREMENT,
+    product_id INT AUTO_INCREMENT PRIMARY KEY,
     product_name VARCHAR(50) NOT NULL,
-    unit_of_measure VARCHAR(20), -- Litres/kg/... null also possible
+    unit_of_measure VARCHAR(20),
     quantity_per_unit INT NOT NULL CHECK(quantity_per_unit > 0),
-    available_units INT NOT NULL CHECK(available_units >= 0), -- Inventory available in the DB
+    available_units INT NOT NULL CHECK(available_units >= 0),
     mrp FLOAT NOT NULL CHECK(mrp > 0),
-    selling_price FLOAT NOT NULL CHECK(selling_price >= 0), -- = 0 for the case when items are given as free gifts
+    selling_price FLOAT NOT NULL CHECK(selling_price >= 0),
     manufacturer_name VARCHAR(20),
     product_description VARCHAR(500),
     category_id INT NOT NULL,
-    PRIMARY KEY (product_id),
-    FOREIGN KEY (category_id) REFERENCES category(category_id)
+    FOREIGN KEY (category_id) REFERENCES category(category_id) ON DELETE CASCADE ON UPDATE CASCADE
 );
 
 
@@ -84,7 +83,7 @@ CREATE TABLE IF NOT EXISTS shipping_address (
     state VARCHAR(20) NOT NULL,
     pincode VARCHAR(6) NOT NULL CHECK (LENGTH(pincode) = 6),
     PRIMARY KEY (user_id, address_name),
-    FOREIGN KEY (user_id) REFERENCES user(user_id)
+    FOREIGN KEY (user_id) REFERENCES user(user_id) ON DELETE CASCADE ON UPDATE CASCADE
 );
 
 
@@ -123,9 +122,9 @@ CREATE TABLE IF NOT EXISTS order_details (
     order_value FLOAT NOT NULL CHECK(order_value > 0),
     delivery_charge FLOAT NOT NULL CHECK(delivery_charge >= 0),
     PRIMARY KEY (order_no),
-    FOREIGN KEY (user_id) REFERENCES user(user_id),
-    FOREIGN KEY (coupon_code) REFERENCES coupon(coupon_code),
-    FOREIGN KEY (user_id, address_name) REFERENCES shipping_address(user_id, address_name)
+    FOREIGN KEY (user_id) REFERENCES user(user_id) ON DELETE CASCADE ON UPDATE CASCADE,
+    FOREIGN KEY (coupon_code) REFERENCES coupon(coupon_code) ON DELETE SET NULL ON UPDATE CASCADE,
+    FOREIGN KEY (user_id, address_name) REFERENCES shipping_address(user_id, address_name) ON DELETE CASCADE ON UPDATE CASCADE
 );
 
 
@@ -135,8 +134,8 @@ CREATE TABLE IF NOT EXISTS order_products (
     number_of_units INT NOT NULL CHECK(number_of_units > 0),
     price_per_unit FLOAT NOT NULL CHECK(price_per_unit >= 0),
     PRIMARY KEY (order_no, product_id),
-    FOREIGN KEY (order_no) REFERENCES order_details(order_no),
-    FOREIGN KEY (product_id) REFERENCES product(product_id)
+    FOREIGN KEY (order_no) REFERENCES order_details(order_no) ON DELETE CASCADE ON UPDATE CASCADE,
+    FOREIGN KEY (product_id) REFERENCES product(product_id) ON DELETE CASCADE ON UPDATE CASCADE
 );
 
 
@@ -145,7 +144,7 @@ CREATE TABLE IF NOT EXISTS shipment (
     shipment_status VARCHAR(20) NOT NULL,
     delivery_date_time DATETIME NOT NULL,
     PRIMARY KEY (order_no),
-    FOREIGN KEY (order_no) REFERENCES order_details(order_no)
+    FOREIGN KEY (order_no) REFERENCES order_details(order_no) ON DELETE CASCADE ON UPDATE CASCADE
 );
 
 
@@ -154,6 +153,6 @@ CREATE TABLE IF NOT EXISTS add_to_cart (
     product_id INT,
     number_of_units INT NOT NULL, -- The number of units of that particular product selected by the user
     PRIMARY KEY (user_id, product_id),
-    FOREIGN KEY (user_id) REFERENCES user(user_id),
-    FOREIGN KEY (product_id) REFERENCES product(product_id)
+    FOREIGN KEY (user_id) REFERENCES user(user_id) ON DELETE CASCADE ON UPDATE CASCADE,
+    FOREIGN KEY (product_id) REFERENCES product(product_id) ON DELETE CASCADE ON UPDATE CASCADE
 );
