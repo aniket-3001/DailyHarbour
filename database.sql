@@ -16,11 +16,6 @@ CREATE TABLE IF NOT EXISTS user (
 );
 
 
-INSERT INTO user (mobile_number, first_name, middle_name, last_name, password_hash, gender, date_of_birth) 
-VALUES
-('1234567890', 'John', 'Doe', null, 'hashedpassword1', 'male', '1990-05-15');
-
-
 CREATE TABLE IF NOT EXISTS category (
     category_id INT NOT NULL,
     category_name VARCHAR(50) NOT NULL,
@@ -81,11 +76,6 @@ CREATE TABLE IF NOT EXISTS shipping_address (
     PRIMARY KEY (user_id, address_name),
     FOREIGN KEY (user_id) REFERENCES user(user_id) ON DELETE CASCADE ON UPDATE CASCADE
 );
-
-
-INSERT INTO shipping_address (user_id, address_name, address_line_1, city, state, pincode)
-VALUES
-(1, "Home", "x", 'New York', 'New York', '100001');
 
 
 CREATE TABLE IF NOT EXISTS coupon (

@@ -431,6 +431,45 @@ def register_user():
             db.close()
     except Exception as e:
         return jsonify({'error': str(e)}), 500
+    
+
+@app.route('/api_address', methods=["POST"])
+def api_address():
+    user_id = session.get("user_id")
+
+    if user_id:
+        try:
+            data = request.get_json()
+            
+            # Retrieve all the fields from the JSON data
+            address_name = data.get('address_name')
+            address_line_1 = data.get('address_line_1')
+            address_line_2 = data.get('address_line_2')
+            address_line_3 = data.get('address_line_3')
+            city = data.get('city')
+            state = data.get('state')
+            pincode = data.get('pincode')
+            
+            db = get_database_connection()
+            cursor = db.cursor()
+            
+            # Inserting the address into the database
+            query = '''INSERT INTO shipping_address (user_id, address_name, address_line_1, address_line_2, address_line_3, city, state, pincode) VALUES (%s, %s, %s, %s, %s, %s, %s, %s);'''
+            
+            cursor.execute(query, (user_id, address_name, address_line_1, address_line_2, address_line_3, city, state, pincode))
+            
+            db.commit()
+
+            cursor.close()
+            db.close()
+
+            return jsonify({'message': 'Address created successfully'}), 200
+        except Exception as e:
+            print(e)
+            return jsonify({'error': 'Address not provided or database error'}), 400
+    else:
+        return jsonify({'error': 'User not authenticated'}), 401
+
 
 
 if __name__ == "__main__":

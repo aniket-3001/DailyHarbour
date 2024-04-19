@@ -6,34 +6,68 @@ Document
 
 {% block body %}
 <form>
-    <label for="address">Enter Address:</label><br>
-    <input type="text" id="address" name="address"><br><br>
+    <label for="address_name">Address Name:</label><br>
+    <input type="text" id="address_name" name="address_name"><br><br>
+    
+    <label for="address_line_1">Address Line 1:</label><br>
+    <input type="text" id="address_line_1" name="address_line_1"><br><br>
+    
+    <label for="address_line_2">Address Line 2:</label><br>
+    <input type="text" id="address_line_2" name="address_line_2"><br><br>
+    
+    <label for="address_line_3">Address Line 3:</label><br>
+    <input type="text" id="address_line_3" name="address_line_3"><br><br>
+    
+    <label for="city">City:</label><br>
+    <input type="text" id="city" name="city"><br><br>
+    
+    <label for="state">State:</label><br>
+    <input type="text" id="state" name="state"><br><br>
+    
+    <label for="pincode">Pincode:</label><br>
+    <input type="text" id="pincode" name="pincode"><br><br>
+    
     <!-- Add an onclick event to the button to call the addAddress function -->
     <button type="button" onclick="addAddress()">Create New Address</button>
 </form>
 
 <script>
     function addAddress() {
-        const address = document.getElementById('address').value;
+        const address_name = document.getElementById('address_name').value;
+        const address_line_1 = document.getElementById('address_line_1').value;
+        const address_line_2 = document.getElementById('address_line_2').value;
+        const address_line_3 = document.getElementById('address_line_3').value;
+        const city = document.getElementById('city').value;
+        const state = document.getElementById('state').value;
+        const pincode = document.getElementById('pincode').value;
 
-        fetch('/api/address', {
+        const addressData = {
+            address_name: address_name,
+            address_line_1: address_line_1,
+            address_line_2: address_line_2,
+            address_line_3: address_line_3,
+            city: city,
+            state: state,
+            pincode: pincode
+        };
+
+        fetch('/api_address', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json'
             },
-            body: JSON.stringify({ address: address })
+            body: JSON.stringify(addressData)
         })
             .then((response) => {
                 if (response.ok) {
-                    alert('Address created successfully')
-                }
-                else {
-                    alert('Failed to create address')
+                    alert('Address created successfully');
+                } else {
+                    alert('Failed to create address');
                 }
             })
             .catch((error) => {
-                alert(error.message)
-            })
+                alert(error.message);
+            });
     }
 </script>
 {% endblock body %}
