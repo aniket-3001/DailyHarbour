@@ -365,6 +365,7 @@ def orderProducts(order_no, user_id):
     cursor.close()
     db.close()
 
+
 @app.route('/send_address', methods = ["POST"])
 def place_order():
     user_id = session.get("user_id")
@@ -395,6 +396,11 @@ def place_order():
             return jsonify({'error': 'Address not provided'}), 400
     else:
         return jsonify({'error': 'User not authenticated'}), 401
+    
+
+@app.route('/signup', methods = ["GET"])
+def signup():
+    return render_template("signup.html")
 
 
 if __name__ == "__main__":
