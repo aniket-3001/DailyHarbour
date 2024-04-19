@@ -1,0 +1,39 @@
+{% extends "base.html" %}
+
+{% block title %}
+Document
+{% endblock title %}
+
+{% block body %}
+<form>
+    <label for="address">Enter Address:</label><br>
+    <input type="text" id="address" name="address"><br><br>
+    <!-- Add an onclick event to the button to call the addAddress function -->
+    <button type="button" onclick="addAddress()">Create New Address</button>
+</form>
+
+<script>
+    function addAddress() {
+        const address = document.getElementById('address').value;
+
+        fetch('/api/address', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({ address: address })
+        })
+            .then((response) => {
+                if (response.ok) {
+                    alert('Address created successfully')
+                }
+                else {
+                    alert('Failed to create address')
+                }
+            })
+            .catch((error) => {
+                alert(error.message)
+            })
+    }
+</script>
+{% endblock body %}
