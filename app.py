@@ -403,5 +403,35 @@ def signup():
     return render_template("signup.html")
 
 
+@app.route('/send_user_details', methods=["POST"])
+def register_user():
+    try:
+        data = request.get_json()
+        first_name = data.get('firstName')
+        last_name = data.get('lastName')
+        middle_name = data.get('middleName')
+        gender = data.get('gender')
+        dob = data.get('dob')
+        phone = data.get('phone')
+        password = data.get('password')
+
+        db = get_database_connection()
+        cursor = db.cursor()
+        try:
+            query = "INSERT INTO user (mobile_number, first_name, middle_name, last_name, password_hash, gender, date_of_birth) VALUES (%s, %s, %s, %s, %s, %s, %s)"
+            cursor.execute(query, (phone, first_name, middle_name,
+                                last_name, password, gender, dob))
+            db.commit()
+            return jsonify({'message': 'User added successfully'}), 200
+        except Exception as e:
+            print(e)
+            return jsonify({'error': 'Database failed to add user'}), 500
+        finally:
+            cursor.close()
+            db.close()
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+
+
 if __name__ == "__main__":
     app.run(debug = True)

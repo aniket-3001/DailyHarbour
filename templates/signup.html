@@ -98,13 +98,51 @@
                 <label for="floatingPassword">Password</label>
             </div>
 
-            <button class="btn btn-primary w-100 py-2" type="submit">Sign in</button>
+            <button class="btn btn-primary w-100 py-2" type="button" onclick="sendDetails()">Sign in</button>
         </form>
     </main>
     <script src="/docs/5.3/dist/js/bootstrap.bundle.min.js"
         integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz"
         crossorigin="anonymous"></script>
 
+    <script>
+        function sendDetails() {
+            const firstName = document.getElementById('firstName').value;
+            const middleName = document.getElementById('middleName').value;
+            const lastName = document.getElementById('lastName').value;
+            const gender = document.getElementById('gender').value;
+            const dob = document.getElementById('dob').value;
+            const phone = document.getElementById('floatingInput').value;
+            const password = document.getElementById('floatingPassword').value;
+
+            fetch("/send_user_details", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify({
+                    firstName,
+                    middleName,
+                    lastName,
+                    gender,
+                    dob,
+                    phone,
+                    password})
+            })
+                .then((response) => {
+                    if (response.ok) {
+                        alert("You have been registered successfully.");
+                        window.location.href = "/";
+                    }
+                    else {
+                        alert("Response not ok");
+                    }
+                })
+                .catch((error) => {
+                    alert(error.message);
+                });
+        }
+    </script>
 </body>
 
 </html>
