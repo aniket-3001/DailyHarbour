@@ -18,11 +18,7 @@ CREATE TABLE IF NOT EXISTS user (
 
 INSERT INTO user (mobile_number, first_name, middle_name, last_name, password_hash, gender, date_of_birth) 
 VALUES
-('1234567890', 'John', 'Doe', null, 'hashedpassword1', 'male', '1990-05-15'),
-('9876543210', 'Jane', 'A.', 'Smith', 'hashedpassword2', 'female', '1985-08-22'),
-('5556667777', 'Alex', null, 'Johnson', 'hashedpassword3', 'non-binary', '1995-11-10'),
-('3332221111', 'Sam', null, 'Miller', 'hashedpassword4', 'prefer not to say', '1980-03-03'),
-('4447778888', 'Taylor', 'M.', 'Clark', 'hashedpassword5', 'other', '1992-09-18');
+('1234567890', 'John', 'Doe', null, 'hashedpassword1', 'male', '1990-05-15');
 
 
 CREATE TABLE IF NOT EXISTS category (
