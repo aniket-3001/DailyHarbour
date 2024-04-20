@@ -36,14 +36,19 @@ def get_product_id(cursor, name):
     product_data = cursor.fetchone()
     return product_data[0] if product_data else None
 
-
+# conflicting transaction
 def add_to_cart_db(cursor, db, user_id, product_id, quantity):
     try:
+        if db.in_transaction:
+            db.commit()
+        db.start_transaction()  # Starting the transaction
         insert_query = "INSERT INTO add_to_cart (user_id, product_id, number_of_units) VALUES (%s, %s, %s)"
         cursor.execute(insert_query, (user_id, product_id, quantity))
-        db.commit()
+        db.commit()  # Committing the transaction
     except Exception as e:
+        db.rollback()  # Rolling back the transaction if an exception occurs
         print(e)
+    # finally:
 
 
 @app.route('/', methods=["POST", "GET"])
@@ -95,14 +100,19 @@ def timer_expired():
         try:
             db = get_database_connection()
             cursor = db.cursor()
-            delete_query = "DELETE FROM add_to_cart WHERE user_id = %s"
-            cursor.execute(delete_query, (user_id,))
+            
+            if db.in_transaction:
+                db.commit()
+
+            db.start_transaction()
+            query = "DELETE FROM add_to_cart WHERE user_id = %s"
+            cursor.execute(query, (user_id,))
             db.commit()
-            cursor.close()
-            db.close()
-            return jsonify({'message': 'User cart emptied successfully'}), 200
+            return jsonify({'message': 'Cart emptied successfully'}), 200
         except Exception as e:
-            return jsonify({'error': str(e)}), 500
+            print(e)
+            db.rollback()
+            return jsonify({'error': 'Database failed to empty cart'}), 500
     else:
         return jsonify({'error': 'User not authenticated'}), 401
 
@@ -205,12 +215,17 @@ def delete_user():
         db = get_database_connection()
         cursor = db.cursor()
         try:
+            if (db.in_transaction):
+                db.commit()
+
+            db.start_transaction()
             query = "DELETE FROM user WHERE user_id = %s"
             cursor.execute(query, (id,))
             db.commit()
             return jsonify({'message': 'User deleted successfully'}), 200
         except Exception as e:
             print(e)
+            db.rollback()
             return jsonify({'error': 'Database failed to delete user'}), 500
         finally:
             cursor.close()
@@ -328,6 +343,11 @@ def orderDetails(address, user_id):
     try:
         order_value = get_order_value(cursor, user_id)
         number_of_products = get_number_of_products(cursor, user_id)
+
+        if db.in_transaction:
+            db.commit()
+
+        db.start_transaction()
         
         # Insert order details into the database
         query = '''INSERT INTO order_details (user_id, address_name, order_date, total_number_of_items, order_value, delivery_charge) VALUES (%s, %s, %s, %s, %s, %s);'''
@@ -357,6 +377,11 @@ def orderProducts(order_no, user_id):
     db = get_database_connection()
     cursor = db.cursor()
 
+    if db.in_transaction:
+        db.commit()
+
+    db.start_transaction()
+
     for product_id in cart_data:
         query = '''INSERT INTO order_products (order_no, product_id, number_of_units, price_per_unit) VALUES (%s, %s, %s, %s);'''
         cursor.execute(query, (order_no, product_id, cart_data[product_id]['number_of_units'], cart_data[product_id]['selling_price']))
@@ -382,6 +407,11 @@ def place_order():
             # empty the cart for the user once the order has been created
             db = get_database_connection()
             cursor = db.cursor()
+
+            if db.in_transaction:
+                db.commit()
+
+            db.start_transaction()
             query = "DELETE FROM add_to_cart where user_id = %s"
             cursor.execute(query, (user_id,))
             cursor.fetchall()
@@ -417,18 +447,28 @@ def register_user():
 
         db = get_database_connection()
         cursor = db.cursor()
+
         try:
+            if (db.in_transaction):
+                db.commit()
+
+            # Start transaction
+            db.start_transaction()
+
             query = "INSERT INTO user (mobile_number, first_name, middle_name, last_name, password_hash, gender, date_of_birth) VALUES (%s, %s, %s, %s, %s, %s, %s)"
-            cursor.execute(query, (phone, first_name, middle_name,
-                                last_name, password, gender, dob))
+            cursor.execute(query, (phone, first_name, middle_name, last_name, password, gender, dob))
+
+            # Commit transaction
             db.commit()
             return jsonify({'message': 'User added successfully'}), 200
-        except Exception as e:
-            print(e)
+        except mysql.connector.Error as err:
+            # Rollback transaction in case of errors
+            db.rollback()
             return jsonify({'error': 'Database failed to add user'}), 500
         finally:
             cursor.close()
             db.close()
+            # Ensure to end the transaction even in case of exceptions
     except Exception as e:
         return jsonify({'error': str(e)}), 500
     
@@ -452,6 +492,11 @@ def api_address():
             
             db = get_database_connection()
             cursor = db.cursor()
+
+            if db.in_transaction:
+                db.commit()
+
+            db.start_transaction()
             
             # Inserting the address into the database
             query = '''INSERT INTO shipping_address (user_id, address_name, address_line_1, address_line_2, address_line_3, city, state, pincode) VALUES (%s, %s, %s, %s, %s, %s, %s, %s);'''
@@ -487,6 +532,11 @@ def add_product():
         db = get_database_connection()
         cursor = db.cursor()
 
+        if db.in_transaction:
+            db.commit()
+
+        db.start_transaction()
+
         query = '''INSERT INTO product (product_name, unit_of_measure, selling_price, available_units, category_id, mrp, quantity_per_unit) VALUES (%s, %s, %s, %s, %s, %s, %s);'''
 
         cursor.execute(query, (product_name, unit_of_measure, selling_price, available_units, category_id, mrp, quantity_per_unit))
@@ -504,3 +554,4 @@ def add_product():
 
 if __name__ == "__main__":
     app.run(debug = True)
+
