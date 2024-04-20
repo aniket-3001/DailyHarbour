@@ -48,7 +48,7 @@ CREATE TABLE IF NOT EXISTS product (
 );
 
 
-INSERT INTO product (product_name, unit_of_measure, quantity_per_unit, available_units, mrp, selling_price, manufacturer_name, product_description, category_id)
+INSERT INTO product (product_name, unit_of_measure, quantity_per_unit, available_units, mrp, selling_price, category_id)
 VALUES
 ('Headphones', 'Single Unit', 1, 100000, 49.99, 39.99, 1),
 ('Charger', 'Single Unit', 1, 100000, 19.99, 14.99, 2),

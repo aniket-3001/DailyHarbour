@@ -19,7 +19,6 @@ def get_database_connection():
         database = "DailyHarbour"
     )
 
-
 @app.route('/homepage', methods=["GET"])
 def homepage():
     return render_template("homepage.html")
@@ -48,8 +47,6 @@ def add_to_cart_db(cursor, db, user_id, product_id, quantity):
     except Exception as e:
         db.rollback()  # Rolling back the transaction if an exception occurs
         print(e)
-    # finally:
-
 
 @app.route('/', methods=["POST", "GET"])
 def login():
@@ -89,8 +86,8 @@ def login():
     remaining_attempts = 3 - session.get("login_attempts", 0)
     return render_template("login.html",  remaining_attempts=remaining_attempts)
 
-
 # Define a route to handle the timer expiration
+# non-conflicting transaction
 @app.route('/timer_expired', methods=["POST"])
 def timer_expired():
     user_id = session.get("user_id")
@@ -115,7 +112,6 @@ def timer_expired():
             return jsonify({'error': 'Database failed to empty cart'}), 500
     else:
         return jsonify({'error': 'User not authenticated'}), 401
-
 
 # Function to fetch cart data from the database (private function)
 def get_cart_data(user_id):
@@ -180,7 +176,6 @@ def cart():
 def add_user():
     try:
         data = request.get_json()
-        id = data.get('user_id')  # Assuming the JSON key is 'user_id'
         first_name = data.get('first_name')
         last_name = data.get('last_name')
         middle_name = data.get('middle_name')
@@ -255,8 +250,9 @@ def display_users():
         for user in users:
             user_dict = {
                 'id': user[0],
-                'first_name': user[1],
-                'last_name': user[2],
+                'mobile_number': user[1],
+                'first_name': user[2],
+                'last_name': user[4],
                 # Add other user attributes as needed
             }
             users_list.append(user_dict)
@@ -266,6 +262,132 @@ def display_users():
         # Return error message with status code 500
         return jsonify({'error': str(e)}), 500
 
+
+# non-conflicting transaction
+@app.route('/add_product', methods=["POST"])
+def add_product():
+    try:
+        data = request.get_json()
+        print(data)
+        product_name = data.get('product_name')
+        unit_of_measure = data.get('unit_of_measure')
+        selling_price = data.get('selling_price')
+        available_units = data.get('avail_units')
+        category_id = data.get('category_id')
+        mrp = data.get('mrp')
+        quantity_per_unit = data.get('quantity_per_unit')
+
+        db = get_database_connection()
+        cursor = db.cursor()
+
+        if db.in_transaction:
+            db.commit()
+
+        db.start_transaction()
+
+        query = '''INSERT INTO product (product_name, unit_of_measure, selling_price, available_units, category_id, mrp, quantity_per_unit) VALUES (%s, %s, %s, %s, %s, %s, %s);'''
+
+        cursor.execute(query, (product_name, unit_of_measure, selling_price, available_units, category_id, mrp, quantity_per_unit))
+        db.commit()
+
+        cursor.close()
+        db.close()
+
+        return jsonify({'message': 'Product added successfully'}), 200
+    except Exception as e:
+        print(e)
+        return jsonify({'error': 'Product not added'}), 500
+    
+@app.route('/delete_product', methods=["POST"])
+def delete_product():
+    try:
+        data = request.get_json()
+        id = data.get('product_id')
+        db = get_database_connection()
+        cursor = db.cursor()
+        if db.in_transaction:
+            db.commit()
+
+        db.start_transaction()
+        try:
+            query = "DELETE FROM product WHERE product_id = %s"
+            cursor.execute(query, (id,))
+            db.commit()
+            return jsonify({'message': 'Product deleted successfully'}), 200
+        except Exception as e:
+            print(e)
+            return jsonify({'error': 'Database failed to delete product'}), 500
+        finally:
+            cursor.close()
+            db.close()
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+
+
+@app.route('/display_product', methods=["GET"])
+def display_product():
+    try:
+        db = get_database_connection()
+        cursor = db.cursor()
+        query = "SELECT * FROM product"
+        cursor.execute(query)
+        products = cursor.fetchall()
+        cursor.close()
+        db.close()
+
+        # Convert the users data to a list of dictionaries for JSON serialization
+        products_list = []
+        for product in products:
+            product_dict = {
+                'id': product[0],
+                'product_name': product[1],
+                'available_units': product[4],
+                'selling_price': product[6]
+                # Add other product attributes as needed
+            }
+            products_list.append(product_dict)
+
+        return jsonify(products_list)  # Return JSON response with product details
+    except Exception as e:
+        # Return error message with status code 500
+        return jsonify({'error': str(e)}), 500
+
+@app.route('/update_product', methods=["POST"])
+def update_product():
+    try:
+        data = request.get_json()
+        product_ID = data.get('product_ID')
+        product_name = data.get('product_name')
+        unit_of_measure = data.get('unit_of_measure')
+        quantity_per_unit = data.get('quantity_per_unit')
+        available_units = data.get('available_units')
+        mrp = data.get('mrp')
+        selling_price = data.get('selling_price')
+        manufacturer_name = data.get('manufacturer_name')
+        product_description = data.get('product_description')
+        category_ID = data.get('category_ID')
+
+        db = get_database_connection()
+        cursor = db.cursor()
+        if db.in_transaction:
+            db.commit()
+
+        db.start_transaction()
+        try:
+            query = "UPDATE product SET product_name = %s, unit_of_measure = %s, quantity_per_unit = %s, available_units = %s, mrp = %s, selling_price = %s, manufacturer_name = %s, product_description = %s, category_id = %s WHERE product_id = %s;"
+            cursor.execute(query, (product_name, unit_of_measure, quantity_per_unit, available_units, 
+                            mrp, selling_price, manufacturer_name, product_description, category_ID, product_ID))
+            db.commit()
+            return jsonify({'message': 'Product updated successfully'}), 200
+        except Exception as e:
+            print(e)
+            return jsonify({'error': 'Database failed to update product'}), 500
+        finally:
+            cursor.close()
+            db.close()
+    except Exception as e:
+        print(e)
+        return jsonify({'error': str(e)}), 500
 
 # This route is used to fetch the products added by user to their cart on the frontend
 @app.route('/add_to_cart', methods=['POST'])
@@ -336,6 +458,7 @@ def get_number_of_products(cursor, user_id):
 
 
 # returns the order number
+# non-conflicting transaction
 def orderDetails(address, user_id):
     db = get_database_connection()
     cursor = db.cursor()
@@ -370,7 +493,7 @@ def orderDetails(address, user_id):
         cursor.close()
         db.close()
 
-
+# non-conflicting transaction
 def orderProducts(order_no, user_id):
     # first get the products in the cart
     cart_data = get_cart_data2(user_id)
@@ -412,6 +535,7 @@ def place_order():
                 db.commit()
 
             db.start_transaction()
+            # conflicting transaction
             query = "DELETE FROM add_to_cart where user_id = %s"
             cursor.execute(query, (user_id,))
             cursor.fetchall()
@@ -425,14 +549,14 @@ def place_order():
             print(e)
             return jsonify({'error': 'Address not provided'}), 400
     else:
-        return jsonify({'error': 'User not authenticated'}), 401
-    
+        return jsonify({'error': 'User not authenticated'}), 401    
 
 @app.route('/signup', methods = ["GET"])
 def signup():
     return render_template("signup.html")
 
 
+# non-conflicting transaction
 @app.route('/send_user_details', methods=["POST"])
 def register_user():
     try:
@@ -473,6 +597,7 @@ def register_user():
         return jsonify({'error': str(e)}), 500
     
 
+# non-conflicting transaction
 @app.route('/api_address', methods=["POST"])
 def api_address():
     user_id = session.get("user_id")
@@ -515,43 +640,5 @@ def api_address():
     else:
         return jsonify({'error': 'User not authenticated'}), 401
     
-
-@app.route('/add_product', methods=["POST"])
-def add_product():
-    try:
-        data = request.get_json()
-        print(data)
-        product_name = data.get('product_name')
-        unit_of_measure = data.get('unit_of_measure')
-        selling_price = data.get('selling_price')
-        available_units = data.get('avail_units')
-        category_id = data.get('category_id')
-        mrp = data.get('mrp')
-        quantity_per_unit = data.get('quantity_per_unit')
-
-        db = get_database_connection()
-        cursor = db.cursor()
-
-        if db.in_transaction:
-            db.commit()
-
-        db.start_transaction()
-
-        query = '''INSERT INTO product (product_name, unit_of_measure, selling_price, available_units, category_id, mrp, quantity_per_unit) VALUES (%s, %s, %s, %s, %s, %s, %s);'''
-
-        cursor.execute(query, (product_name, unit_of_measure, selling_price, available_units, category_id, mrp, quantity_per_unit))
-        db.commit()
-
-        cursor.close()
-        db.close()
-
-        return jsonify({'message': 'Product added successfully'}), 200
-    except Exception as e:
-        print(e)
-        return jsonify({'error': 'Product not added'}), 500
-
-
-
 if __name__ == "__main__":
     app.run(debug = True)
-
