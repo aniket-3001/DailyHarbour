@@ -7,53 +7,53 @@
     <title>Admin Page</title>
     <style>
         body {
-            text-align: center; /* Align text center */
-            margin-top: 170px; /* Add margin to the top */
+            text-align: center;
+            margin-top: 170px;
         }
 
         .admin-box {
-            background-color: gray; /* Pink background color */
-            padding: 20px; /* Add padding */
-            border-radius: 10px; /* Add border radius */
-            box-shadow: 0 0 10px rgba(0, 0, 0, 0.2); /* Add box shadow */
-            display: inline-block; /* Display as inline-block to fit content */
+            background-color: gray;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
+            display: inline-block;
             margin-right: 20px;
         }
 
         .admin-details {
-            display: inline-block; /* Display as inline-block */
-            vertical-align: top; /* Align to the top */
-            width: calc(50% - 200px); /* Set width */
-            margin-right: 10px; /* Reduce margin to the right */
-            margin-bottom: 20px; /* Add margin to the bottom */
+            display: inline-block;
+            vertical-align: top;
+            width: calc(50% - 200px);
+            margin-right: 10px;
+            margin-bottom: 20px;
         }
 
         h1 {
-            font-weight: bold; /* Make heading bold */
+            font-weight: bold;
         }
 
         .button-container {
             display: flex;
-            flex-direction: column; /* Display buttons vertically */
-            align-items: center; /* Align buttons in the center horizontally */
-            margin-top: 30px; /* Add margin to the top of the button container */
+            flex-direction: column;
+            align-items: center;
+            margin-top: 30px;
         }
 
         .button-container button {
-            margin: 10px; /* Add margin around the buttons */
-            padding: 10px 20px; /* Add padding to the buttons */
-            width: 250px; /* Set fixed width */
+            margin: 10px;
+            padding: 10px 20px;
+            width: 250px;
             height: 40px;
-            font-size: 16px; /* Adjust font size */
-            border: 1px solid #555; /* Add border */
-            border-radius: 5px; /* Add border radius */
-            background-color: #f5f5f5; /* Add background color */
-            box-shadow: 2px 2px 5px rgba(0, 0, 0, 0.3); /* Add box shadow for 3D effect */
-            transition: box-shadow 0.3s ease; /* Add transition for smooth effect */
+            font-size: 16px;
+            border: 1px solid #555;
+            border-radius: 5px;
+            background-color: #f5f5f5;
+            box-shadow: 2px 2px 5px rgba(0, 0, 0, 0.3);
+            transition: box-shadow 0.3s ease;
         }
 
         .button-container button:hover {
-            box-shadow: 4px 4px 8px rgba(0, 0, 0, 0.5); /* Adjust box shadow on hover for 3D effect */
+            box-shadow: 4px 4px 8px rgba(0, 0, 0, 0.5);
         }
     </style>
 </head>
@@ -61,14 +61,10 @@
 <body>
     <div class="admin-details">
         <div class="admin-box">
-            <h1>User Details</h1> 
-            <!-- Button container for Add, Update, Delete buttons -->
+            <h1>User Details</h1>
             <div class="button-container">
-                <!-- Button to add a new user -->
                 <button onclick="openAddUserForm();">Add User</button>
-                <!-- Button to delete an existing user -->
                 <button onclick="openDeleteUserForm();">Delete User</button>
-                <!-- Button to display user details -->
                 <button onclick="displayUserDetails();">Display User Details</button>
             </div>
         </div>
@@ -92,24 +88,6 @@
         <button onclick="addUser();">Submit</button>
     </form>
 
-    <!-- Hidden form for updating an existing user -->
-    <form id="updateUserForm" style="display: none;">
-        <input type="number" id="userIdToUpdate" placeholder="User ID to Update" required>
-        <input type="text" id="newFirstName" placeholder="New First Name">
-        <input type="text" id="newMiddleName" placeholder="New Middle Name">
-        <input type="text" id="newLastName" placeholder="New Last Name">
-        <input type="password" id="newPassword" placeholder="New Password">
-        <select id="newGender">
-            <option value="male">Male</option>
-            <option value="female">Female</option>
-            <option value="other">Other</option>
-            <option value="non-binary">Non-binary</option>
-            <option value="prefer not to say">Prefer not to say</option>
-        </select>
-        <input type="date" id="newDateOfBirth">
-        <button onclick="updateUser();">Submit</button>
-    </form>
-
     <!-- Hidden form for deleting an existing user -->
     <form id="deleteUserForm" style="display: none;">
         <input type="number" id="userIdToDelete" placeholder="User ID to Delete" required>
@@ -126,35 +104,65 @@
                 <button onclick="displayProductDetails();">Display Product Details</button>
             </div>
         </div>
-        <!-- Hidden forms for product operations -->
-        <!-- Add, update, delete product forms -->
     </div>
+
     <div id="userDetails">
         <!-- Display user details here -->
-
     </div>
+
+    <div id="productDetails">
+        <!-- Display product details here -->
+    </div>
+
+    <!-- Hidden form for adding a new product -->
+    <form id="addProductForm" style="display: none;">
+        <input type="text" id="productName" placeholder="Product Name" required>
+        <input type="text" id="unitOfMeasure" placeholder="Unit of Measure (Kg/litres)" required>
+        <input type="text" id="quantityPerUnit" placeholder="Quantity Per Unit">
+        <input type="text" id="availUnits" placeholder="Available Units" required>
+        <input type="text" id="mrp" placeholder="MRP" required>
+        <input type="text" id="sellingPrice" placeholder="Selling Price" required>
+        <input type="text" id="categoryID" placeholder="category ID" required>
+        <button onclick="addProduct();">Submit</button>
+    </form>
+
+    <!-- Hidden form for updating an existing product -->
+    <form id="updateProductForm" style="display: none;">
+        <input type="number" id="productIdToUpdate" placeholder="Product ID to Update" required>
+        <input type="text" id="newProductName" placeholder="New Product Name">
+        <input type="text" id="newUnitOfMeasure" placeholder="New Unit of Measure (Kg/litres)">
+        <input type="text" id="newQuantityPerUnit" placeholder="New Quantity Per Unit">
+        <input type="text" id="newAvailUnits" placeholder="New Available Units">
+        <input type="text" id="newMrp" placeholder="New MRP">
+        <input type="text" id="newSellingPrice" placeholder="New Selling Price">
+        <input type="text" id="newCategoryID" placeholder="New category ID">
+        <button onclick="updateProduct();">Submit</button>
+    </form>
+
+    <!-- Hidden form for deleting an existing product -->
+    <form id="deleteProductForm" style="display: none;">
+        <input type="number" id="productIdToDelete" placeholder="Product ID to Delete" required>
+        <button onclick="deleteProduct();">Submit</button>
+    </form>
 
 
     <script>
         function openAddUserForm() {
             // Hide other forms and display the Add User form
             document.getElementById("addUserForm").style.display = "block";
-            document.getElementById("updateUserForm").style.display = "none";
             document.getElementById("deleteUserForm").style.display = "none";
-        }
-
-        function openUpdateUserForm() {
-            // Hide other forms and display the Update User form
-            document.getElementById("addUserForm").style.display = "none";
-            document.getElementById("updateUserForm").style.display = "block";
-            document.getElementById("deleteUserForm").style.display = "none";
+            document.getElementById("addProductForm").style.display = "none";
+            document.getElementById("updateProductForm").style.display = "none";
+            document.getElementById("deleteProductForm").style.display = "none";
         }
 
         function openDeleteUserForm() {
             // Hide other forms and display the Delete User form
             document.getElementById("addUserForm").style.display = "none";
-            document.getElementById("updateUserForm").style.display = "none";
             document.getElementById("deleteUserForm").style.display = "block";
+            document.getElementById("addProductForm").style.display = "none";
+            document.getElementById("updateProductForm").style.display = "none";
+            document.getElementById("deleteProductForm").style.display = "none";
         }
 
         function addUser() {
@@ -215,25 +223,7 @@
             });
             xhr.send(userData);
         }
-        // Product details functions
-        function openAddProductForm() {
 
-        }
-
-        function openUpdateProductForm() {
-            // Implementation for opening update product form
-        }
-
-        function openDeleteProductForm() {
-            // Implementation for opening delete product form
-        }
-
-        function displayProductDetails() {
-            // Implementation for displaying product details
-        }
-    </script>
-
-    <script>
         function displayUserDetails() {
             // Make AJAX request to display user details
             fetch('/display_user', {
@@ -257,7 +247,7 @@
                         userDetailsHtml += `<p>${user.first_name} ${user.last_name}</p>`;
                     });
                     document.getElementById("userDetails").innerHTML = userDetailsHtml; // Update user details container
-    
+
                     console.log('Success:', data);
                 })
                 .catch((error) => {
@@ -266,7 +256,164 @@
                 });
         }
     </script>
-    
+
+    <script>
+        // Product details functions
+        function openAddProductForm() {
+            document.getElementById("addProductForm").style.display = "block";
+            document.getElementById("updateProductForm").style.display = "none";
+            document.getElementById("deleteProductForm").style.display = "none";
+            document.getElementById("addUserForm").style.display = "none";
+            document.getElementById("deleteUserForm").style.display = "none";
+        }
+
+        function openUpdateProductForm() {
+            document.getElementById("addProductForm").style.display = "none";
+            document.getElementById("updateProductForm").style.display = "block";
+            document.getElementById("deleteProductForm").style.display = "none";
+            document.getElementById("addUserForm").style.display = "none";
+            document.getElementById("deleteUserForm").style.display = "none";
+        }
+
+        function openDeleteProductForm() {
+            document.getElementById("addProductForm").style.display = "none";
+            document.getElementById("updateProductForm").style.display = "none";
+            document.getElementById("deleteProductForm").style.display = "block";
+            document.getElementById("addUserForm").style.display = "none";
+            document.getElementById("deleteUserForm").style.display = "none";
+        }
+
+        function addProduct() {
+            var productName = document.getElementById("productName").value;
+            var unitOfMeasure = document.getElementById("unitOfMeasure").value;
+            var quantityPerUnit = document.getElementById("quantityPerUnit").value;
+            var availUnits = document.getElementById("availUnits").value;
+            var mrp = document.getElementById("mrp").value;
+            var sellingPrice = document.getElementById("sellingPrice").value;
+            var categoryID = document.getElementById("categoryID").value;
+
+
+            fetch('/add_product', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    product_name: productName,
+                    unit_of_measure: unitOfMeasure,
+                    quantity_per_unit: quantityPerUnit,
+                    avail_units: availUnits,
+                    mrp: mrp,
+                    selling_price: sellingPrice,
+                    category_id: categoryID
+                }),
+            })
+                .then(response => {
+                    if (response.ok) {
+                        alert('Product added successfully');
+                    } else {
+                        alert('Failed to add product');
+                    }
+                    return response.json(); // Parse response JSON asynchronously
+                })
+                .then(data => {
+                    console.log('Success:', data);
+                })
+                .catch((error) => {
+                    console.error('Error:', error);
+                });
+        }
+
+        function updateProduct() {
+            var productIdToUpdate = document.getElementById("productIdToUpdate").value;
+            var newProductName = document.getElementById("newProductName").value;
+            var newUnitOfMeasure = document.getElementById("newUnitOfMeasure").value;
+            var newQuantityPerUnit = document.getElementById("newQuantityPerUnit").value;
+            var newAvailUnits = document.getElementById("newAvailUnits").value;
+            var newMrp = document.getElementById("newMrp").value;
+            var newSellingPrice = document.getElementById("newSellingPrice").value;
+            var newCategoryID = document.getElementById("newCategoryID").value;
+
+            fetch('/update_product', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    product_id: productIdToUpdate,
+                    product_name: newProductName,
+                    unit_of_measure: newUnitOfMeasure,
+                    quantity_per_unit: newQuantityPerUnit,
+                    avail_units: newAvailUnits,
+                    mrp: newMrp,
+                    selling_price: newSellingPrice,
+                    category_id: newCategoryID
+                }),
+            })
+                .then(response => {
+                    if (response.ok) {
+                        alert('Product updated successfully');
+                    } else {
+                        alert('Failed to update product');
+                    }
+                    return response.json(); // Parse response JSON asynchronously
+                })
+                .catch((error) => {
+                    alert('Failed to update product');
+                });
+        }
+
+        function deleteProduct() {
+            var productIdToDelete = document.getElementById("productIdToDelete").value;
+
+            // Make AJAX request to delete product
+            var xhr = new XMLHttpRequest();
+            xhr.open("POST", "/delete_product", true);
+            xhr.setRequestHeader("Content-Type", "application/json");
+            xhr.onreadystatechange = function () {
+                if (xhr.readyState === 4 && xhr.status === 200) {
+                    alert(xhr.responseText); // Show success message
+                }
+            };
+            var productData = JSON.stringify({
+                product_id: productIdToDelete
+            });
+            xhr.send(productData);
+        }
+
+        function displayProductDetails() {
+            // Make AJAX request to display product details
+            fetch('/display_product', {
+                method: 'GET',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+            })
+                .then(response => {
+                    if (response.ok) {
+                        alert('Product details displayed successfully');
+                        return response.json(); // Parse response JSON asynchronously
+                    } else {
+                        throw new Error('Failed to display product details');
+                    }
+                })
+                .then(data => {
+                    let productDetailsHtml = ''; // String to store product details HTML
+                    data.forEach(product => {
+                        // Construct HTML for each product and append to productDetailsHtml
+                        productDetailsHtml += `<p>${product.product_name} ${product.unit_of_measure}</p>`;
+                    });
+                    document.getElementById("productDetails").innerHTML = productDetailsHtml; // Update product details container
+
+                    console.log('Success:', data);
+                })
+                .catch((error) => {
+                    console.error('Error:', error);
+                    alert('Failed to display product details'); // Show error message
+                });
+        }
+    </script>
+
 </body>
 
 </html>

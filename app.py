@@ -469,6 +469,36 @@ def api_address():
             return jsonify({'error': 'Address not provided or database error'}), 400
     else:
         return jsonify({'error': 'User not authenticated'}), 401
+    
+
+@app.route('/add_product', methods=["POST"])
+def add_product():
+    try:
+        data = request.get_json()
+        print(data)
+        product_name = data.get('product_name')
+        unit_of_measure = data.get('unit_of_measure')
+        selling_price = data.get('selling_price')
+        available_units = data.get('avail_units')
+        category_id = data.get('category_id')
+        mrp = data.get('mrp')
+        quantity_per_unit = data.get('quantity_per_unit')
+
+        db = get_database_connection()
+        cursor = db.cursor()
+
+        query = '''INSERT INTO product (product_name, unit_of_measure, selling_price, available_units, category_id, mrp, quantity_per_unit) VALUES (%s, %s, %s, %s, %s, %s, %s);'''
+
+        cursor.execute(query, (product_name, unit_of_measure, selling_price, available_units, category_id, mrp, quantity_per_unit))
+        db.commit()
+
+        cursor.close()
+        db.close()
+
+        return jsonify({'message': 'Product added successfully'}), 200
+    except Exception as e:
+        print(e)
+        return jsonify({'error': 'Product not added'}), 500
 
 
 

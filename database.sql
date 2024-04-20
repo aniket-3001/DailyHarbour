@@ -43,8 +43,6 @@ CREATE TABLE IF NOT EXISTS product (
     available_units INT NOT NULL CHECK(available_units >= 0),
     mrp FLOAT NOT NULL CHECK(mrp > 0),
     selling_price FLOAT NOT NULL CHECK(selling_price >= 0),
-    manufacturer_name VARCHAR(20),
-    product_description VARCHAR(500),
     category_id INT NOT NULL,
     FOREIGN KEY (category_id) REFERENCES category(category_id) ON DELETE CASCADE ON UPDATE CASCADE
 );
@@ -52,15 +50,15 @@ CREATE TABLE IF NOT EXISTS product (
 
 INSERT INTO product (product_name, unit_of_measure, quantity_per_unit, available_units, mrp, selling_price, manufacturer_name, product_description, category_id)
 VALUES
-('Headphones', 'Single Unit', 1, 100000, 49.99, 39.99, 'SoundTech', 'Sleek and lightweight headphones for on-the-go audio enjoyment.', 1),
-('Charger', 'Single Unit', 1, 100000, 19.99, 14.99, 'PowerTech', 'Universal charger compatible with various devices.', 2),
-('Potatoes', 'Per Kg', 1, 100000, 1.99, 1.49, 'FarmFresh', 'Freshly harvested potatoes from local farms.', 3),
-('Soap', 'Single Unit', 1, 100000, 2.99, 2.49, 'CleanCare', 'Gentle and moisturizing soap for daily use.', 4),
-('Spinach', 'Per Bunch', 1, 100000, 3.99, 2.99, 'GreenHarvest', 'Organically grown spinach packed with nutrients.', 5),
-('Medical Kit', 'Single Unit', 1, 100000, 29.99, 24.99, 'MediAid', 'Comprehensive first aid kit for emergencies.', 3),
-('Watch', 'Single Unit', 1, 100000, 99.99, 79.99, 'TimeWise', 'Stylish and durable wristwatch for everyday wear.', 2),
-('Perfume', 'Per Bottle', 1, 100000, 149.99, 129.99, 'Chanel', 'Elegant fragrance with floral and woody notes.', 1),
-('Toothbrush', 'Single Unit', 1, 100000, 3.49, 2.99, 'CleanCare', 'Soft-bristled toothbrush for gentle cleaning.', 2);
+('Headphones', 'Single Unit', 1, 100000, 49.99, 39.99, 1),
+('Charger', 'Single Unit', 1, 100000, 19.99, 14.99, 2),
+('Potatoes', 'Per Kg', 1, 100000, 1.99, 1.49, 3),
+('Soap', 'Single Unit', 1, 100000, 2.99, 2.49, 4),
+('Spinach', 'Per Bunch', 1, 100000, 3.99, 2.99, 5),
+('Medical Kit', 'Single Unit', 1, 100000, 29.99, 24.99, 3),
+('Watch', 'Single Unit', 1, 100000, 99.99, 79.99, 2),
+('Perfume', 'Per Bottle', 1, 100000, 149.99, 129.99, 1),
+('Toothbrush', 'Single Unit', 1, 100000, 3.49, 2.99, 2);
 
 
 -- Shipping address is a multivariate attribute of user, hence making it a separate entity
