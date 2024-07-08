@@ -1,5 +1,3 @@
-Sure, here is a structured and detailed README for your end-to-end ecommerce application:
-
 ---
 
 # Ecommerce Application
