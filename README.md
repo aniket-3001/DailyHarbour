@@ -112,5 +112,3 @@ Transaction control mechanisms were used to maintain data integrity and consiste
 This project is licensed under the MIT License. See the `LICENSE` file for more details.
 
 ---
-
-Feel free to customize the README further according to your specific project details and preferences.
