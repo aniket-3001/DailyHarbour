@@ -107,10 +107,6 @@ To ensure efficient database operations, various query optimization techniques w
 
 Transaction control mechanisms were used to maintain data integrity and consistency, particularly during critical operations such as order processing, payments, and inventory updates. This includes the use of commit and rollback operations to handle errors gracefully.
 
-## Contributing
-
-We welcome contributions to enhance the application. To contribute, please fork the repository, create a new branch for your feature or bugfix, and submit a pull request with a detailed description of your changes.
-
 ## License
 
 This project is licensed under the MIT License. See the `LICENSE` file for more details.
