@@ -20,24 +20,11 @@ This repository contains an end-to-end ecommerce application developed using Pyt
 - SQLAlchemy
 - A SQL database (e.g., MySQL, PostgreSQL)
 
-### Clone the Repository
-
-```bash
-git clone https://github.com/yourusername/ecommerce-app.git
-cd ecommerce-app
-```
-
 ### Setting Up the Virtual Environment
 
 ```bash
 python -m venv venv
 source venv/bin/activate  # On Windows, use `venv\Scripts\activate`
-```
-
-### Installing Dependencies
-
-```bash
-pip install -r requirements.txt
 ```
 
 ### Database Setup
