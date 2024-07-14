@@ -43,24 +43,12 @@ pip install -r requirements.txt
 ### Database Setup
 
 1. Create a SQL database.
-2. Update the database configuration in the `config.py` file.
-
-```python
-SQLALCHEMY_DATABASE_URI = 'mysql+pymysql://username:password@localhost/dbname'
-```
-
-3. Initialize the database.
-
-```bash
-flask db init
-flask db migrate
-flask db upgrade
-```
+2. Update the database configuration in the `app.py` file.
 
 ## Running the Application
 
 ```bash
-flask run
+python app.py
 ```
 
 The application will be available at `http://127.0.0.1:5000`.
@@ -68,44 +56,12 @@ The application will be available at `http://127.0.0.1:5000`.
 ## Project Structure
 
 ```
-ecommerce-app/
-│
-├── app/
+DailyHarbour/
 │   ├── __init__.py
-│   ├── models.py
-│   ├── routes.py
+│   ├── app.py
 │   ├── static/
 │   └── templates/
-│
-├── migrations/
-│
-├── venv/
-│
-├── config.py
-├── requirements.txt
-└── run.py
 ```
-
-- **app/**: Contains the main application code.
-  - **models.py**: Defines the database models.
-  - **routes.py**: Defines the application routes.
-  - **static/**: Contains static files (CSS, JavaScript).
-  - **templates/**: Contains HTML templates.
-- **migrations/**: Contains database migration files.
-- **venv/**: Virtual environment directory.
-- **config.py**: Configuration file for the application.
-- **requirements.txt**: Lists the dependencies required for the application.
-- **run.py**: Entry point for running the application.
-
-## Key Principles
-
-### Query Optimization
-
-To ensure efficient database operations, various query optimization techniques were implemented, such as indexing, query caching, and careful query construction to minimize execution time and resource consumption.
-
-### Transaction Control
-
-Transaction control mechanisms were used to maintain data integrity and consistency, particularly during critical operations such as order processing, payments, and inventory updates. This includes the use of commit and rollback operations to handle errors gracefully.
 
 ## License
 
