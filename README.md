@@ -2,7 +2,7 @@
 
 # Ecommerce Application
 
-This repository contains an end-to-end ecommerce application developed using Python and Flask for the backend, and vanilla HTML, CSS, and JavaScript for the frontend. The application focuses on robust DBMS and SQL integration, ensuring a high-performing and scalable database through the use of query optimization and transaction control principles.
+This repository contains an end-to-end ecommerce application developed using Python and Flask for the backend, and vanilla HTML, CSS, and JavaScript for the frontend. The application focuses on robust DBMS and SQL integration, ensuring a high-performing and scalable database through the use of transaction control principles.
 
 ## Features
 
